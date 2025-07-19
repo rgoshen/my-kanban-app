@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 interface Task {
   id: string;
@@ -17,16 +18,19 @@ export function KanbanBoard({ tasks = [] }: KanbanBoardProps) {
   const doneTasks = tasks.filter(task => task.status === 'done');
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 p-6 dark:bg-gray-900">
       <div className="mx-auto max-w-7xl">
-        <h1 className="mb-8 text-3xl font-bold text-gray-900">Kanban Board</h1>
+        <div className="mb-8 flex items-center justify-between">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Kanban Board</h1>
+          <ThemeToggle />
+        </div>
         
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           {/* To Do Column */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-700">To Do</h2>
-              <span className="rounded-full bg-gray-200 px-2 py-1 text-sm font-medium text-gray-700">
+              <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">To Do</h2>
+              <span className="rounded-full bg-gray-200 px-2 py-1 text-sm font-medium text-gray-700 dark:bg-gray-700 dark:text-gray-300">
                 {todoTasks.length}
               </span>
             </div>
@@ -35,7 +39,7 @@ export function KanbanBoard({ tasks = [] }: KanbanBoardProps) {
                 <TaskCard key={task.id} task={task} />
               ))}
               {todoTasks.length === 0 && (
-                <div className="rounded-lg border-2 border-dashed border-gray-300 p-4 text-center text-gray-500">
+                <div className="rounded-lg border-2 border-dashed border-gray-300 p-4 text-center text-gray-500 dark:border-gray-600 dark:text-gray-400">
                   No tasks yet
                 </div>
               )}
@@ -45,8 +49,8 @@ export function KanbanBoard({ tasks = [] }: KanbanBoardProps) {
           {/* In Progress Column */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-700">In Progress</h2>
-              <span className="rounded-full bg-blue-200 px-2 py-1 text-sm font-medium text-blue-700">
+              <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">In Progress</h2>
+              <span className="rounded-full bg-blue-200 px-2 py-1 text-sm font-medium text-blue-700 dark:bg-blue-800 dark:text-blue-300">
                 {inProgressTasks.length}
               </span>
             </div>
@@ -55,7 +59,7 @@ export function KanbanBoard({ tasks = [] }: KanbanBoardProps) {
                 <TaskCard key={task.id} task={task} />
               ))}
               {inProgressTasks.length === 0 && (
-                <div className="rounded-lg border-2 border-dashed border-gray-300 p-4 text-center text-gray-500">
+                <div className="rounded-lg border-2 border-dashed border-gray-300 p-4 text-center text-gray-500 dark:border-gray-600 dark:text-gray-400">
                   No tasks yet
                 </div>
               )}
@@ -65,8 +69,8 @@ export function KanbanBoard({ tasks = [] }: KanbanBoardProps) {
           {/* Done Column */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-700">Done</h2>
-              <span className="rounded-full bg-green-200 px-2 py-1 text-sm font-medium text-green-700">
+              <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">Done</h2>
+              <span className="rounded-full bg-green-200 px-2 py-1 text-sm font-medium text-green-700 dark:bg-green-800 dark:text-green-300">
                 {doneTasks.length}
               </span>
             </div>
@@ -75,7 +79,7 @@ export function KanbanBoard({ tasks = [] }: KanbanBoardProps) {
                 <TaskCard key={task.id} task={task} />
               ))}
               {doneTasks.length === 0 && (
-                <div className="rounded-lg border-2 border-dashed border-gray-300 p-4 text-center text-gray-500">
+                <div className="rounded-lg border-2 border-dashed border-gray-300 p-4 text-center text-gray-500 dark:border-gray-600 dark:text-gray-400">
                   No tasks yet
                 </div>
               )}
@@ -93,15 +97,15 @@ interface TaskCardProps {
 
 function TaskCard({ task }: TaskCardProps) {
   return (
-    <Card className="cursor-pointer transition-all hover:shadow-md">
+    <Card className="cursor-pointer transition-all hover:shadow-md dark:bg-gray-800 dark:border-gray-700">
       <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium text-gray-900">
+        <CardTitle className="text-sm font-medium text-gray-900 dark:text-white">
           {task.title}
         </CardTitle>
       </CardHeader>
       {task.description && (
         <CardContent className="pt-0">
-          <p className="text-sm text-gray-600">{task.description}</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">{task.description}</p>
         </CardContent>
       )}
     </Card>
