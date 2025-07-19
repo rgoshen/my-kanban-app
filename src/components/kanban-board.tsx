@@ -1,6 +1,5 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/theme-toggle";
 import {
   DndContext,
@@ -11,10 +10,6 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
 import { useState } from "react";
 import { TaskCard } from "./task-card";
 import { DroppableColumn } from "./droppable-column";
@@ -23,7 +18,7 @@ export interface Task {
   id: string;
   title: string;
   description?: string;
-  status: 'todo' | 'in-progress' | 'done';
+  status: "todo" | "in-progress" | "done";
 }
 
 interface KanbanBoardProps {
@@ -39,15 +34,15 @@ export function KanbanBoard({ tasks: initialTasks = [] }: KanbanBoardProps) {
       activationConstraint: {
         distance: 8,
       },
-    })
+    }),
   );
 
-  const todoTasks = tasks.filter(task => task.status === 'todo');
-  const inProgressTasks = tasks.filter(task => task.status === 'in-progress');
-  const doneTasks = tasks.filter(task => task.status === 'done');
+  const todoTasks = tasks.filter((task) => task.status === "todo");
+  const inProgressTasks = tasks.filter((task) => task.status === "in-progress");
+  const doneTasks = tasks.filter((task) => task.status === "done");
 
   function handleDragStart(event: DragStartEvent) {
-    const task = tasks.find(t => t.id === event.active.id);
+    const task = tasks.find((t) => t.id === event.active.id);
     setActiveTask(task || null);
   }
 
@@ -58,12 +53,10 @@ export function KanbanBoard({ tasks: initialTasks = [] }: KanbanBoardProps) {
     if (!over) return;
 
     const taskId = active.id as string;
-    const newStatus = over.id as 'todo' | 'in-progress' | 'done';
+    const newStatus = over.id as "todo" | "in-progress" | "done";
 
-    setTasks(prevTasks =>
-      prevTasks.map(task =>
-        task.id === taskId ? { ...task, status: newStatus } : task
-      )
+    setTasks((prevTasks) =>
+      prevTasks.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task)),
     );
   }
 
@@ -74,12 +67,8 @@ export function KanbanBoard({ tasks: initialTasks = [] }: KanbanBoardProps) {
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Kanban Board</h1>
           <ThemeToggle />
         </div>
-        
-        <DndContext
-          sensors={sensors}
-          onDragStart={handleDragStart}
-          onDragEnd={handleDragEnd}
-        >
+
+        <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             <DroppableColumn
               id="todo"
@@ -101,11 +90,9 @@ export function KanbanBoard({ tasks: initialTasks = [] }: KanbanBoardProps) {
             />
           </div>
 
-          <DragOverlay>
-            {activeTask ? <TaskCard task={activeTask} isDragging /> : null}
-          </DragOverlay>
+          <DragOverlay>{activeTask ? <TaskCard task={activeTask} isDragging /> : null}</DragOverlay>
         </DndContext>
       </div>
     </div>
   );
-} 
+}
