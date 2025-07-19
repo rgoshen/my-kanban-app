@@ -1,7 +1,25 @@
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/theme-toggle";
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { useState } from "react";
+import { TaskCard } from "./task-card";
+import { DroppableColumn } from "./droppable-column";
 
-interface Task {
+export interface Task {
   id: string;
   title: string;
   description?: string;
@@ -12,10 +30,42 @@ interface KanbanBoardProps {
   tasks?: Task[];
 }
 
-export function KanbanBoard({ tasks = [] }: KanbanBoardProps) {
+export function KanbanBoard({ tasks: initialTasks = [] }: KanbanBoardProps) {
+  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+  const [activeTask, setActiveTask] = useState<Task | null>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
+
   const todoTasks = tasks.filter(task => task.status === 'todo');
   const inProgressTasks = tasks.filter(task => task.status === 'in-progress');
   const doneTasks = tasks.filter(task => task.status === 'done');
+
+  function handleDragStart(event: DragStartEvent) {
+    const task = tasks.find(t => t.id === event.active.id);
+    setActiveTask(task || null);
+  }
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    setActiveTask(null);
+
+    if (!over) return;
+
+    const taskId = active.id as string;
+    const newStatus = over.id as 'todo' | 'in-progress' | 'done';
+
+    setTasks(prevTasks =>
+      prevTasks.map(task =>
+        task.id === taskId ? { ...task, status: newStatus } : task
+      )
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 p-6 dark:bg-gray-900">
@@ -25,89 +75,37 @@ export function KanbanBoard({ tasks = [] }: KanbanBoardProps) {
           <ThemeToggle />
         </div>
         
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          {/* To Do Column */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">To Do</h2>
-              <span className="rounded-full bg-gray-200 px-2 py-1 text-sm font-medium text-gray-700 dark:bg-gray-700 dark:text-gray-300">
-                {todoTasks.length}
-              </span>
-            </div>
-            <div className="space-y-3">
-              {todoTasks.map((task) => (
-                <TaskCard key={task.id} task={task} />
-              ))}
-              {todoTasks.length === 0 && (
-                <div className="rounded-lg border-2 border-dashed border-gray-300 p-4 text-center text-gray-500 dark:border-gray-600 dark:text-gray-400">
-                  No tasks yet
-                </div>
-              )}
-            </div>
+        <DndContext
+          sensors={sensors}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+        >
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            <DroppableColumn
+              id="todo"
+              title="To Do"
+              tasks={todoTasks}
+              className="bg-gray-100 dark:bg-gray-800"
+            />
+            <DroppableColumn
+              id="in-progress"
+              title="In Progress"
+              tasks={inProgressTasks}
+              className="bg-blue-50 dark:bg-blue-900/20"
+            />
+            <DroppableColumn
+              id="done"
+              title="Done"
+              tasks={doneTasks}
+              className="bg-green-50 dark:bg-green-900/20"
+            />
           </div>
 
-          {/* In Progress Column */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">In Progress</h2>
-              <span className="rounded-full bg-blue-200 px-2 py-1 text-sm font-medium text-blue-700 dark:bg-blue-800 dark:text-blue-300">
-                {inProgressTasks.length}
-              </span>
-            </div>
-            <div className="space-y-3">
-              {inProgressTasks.map((task) => (
-                <TaskCard key={task.id} task={task} />
-              ))}
-              {inProgressTasks.length === 0 && (
-                <div className="rounded-lg border-2 border-dashed border-gray-300 p-4 text-center text-gray-500 dark:border-gray-600 dark:text-gray-400">
-                  No tasks yet
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Done Column */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">Done</h2>
-              <span className="rounded-full bg-green-200 px-2 py-1 text-sm font-medium text-green-700 dark:bg-green-800 dark:text-green-300">
-                {doneTasks.length}
-              </span>
-            </div>
-            <div className="space-y-3">
-              {doneTasks.map((task) => (
-                <TaskCard key={task.id} task={task} />
-              ))}
-              {doneTasks.length === 0 && (
-                <div className="rounded-lg border-2 border-dashed border-gray-300 p-4 text-center text-gray-500 dark:border-gray-600 dark:text-gray-400">
-                  No tasks yet
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+          <DragOverlay>
+            {activeTask ? <TaskCard task={activeTask} isDragging /> : null}
+          </DragOverlay>
+        </DndContext>
       </div>
     </div>
-  );
-}
-
-interface TaskCardProps {
-  task: Task;
-}
-
-function TaskCard({ task }: TaskCardProps) {
-  return (
-    <Card className="cursor-pointer transition-all hover:shadow-md dark:bg-gray-800 dark:border-gray-700">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium text-gray-900 dark:text-white">
-          {task.title}
-        </CardTitle>
-      </CardHeader>
-      {task.description && (
-        <CardContent className="pt-0">
-          <p className="text-sm text-gray-600 dark:text-gray-400">{task.description}</p>
-        </CardContent>
-      )}
-    </Card>
   );
 } 
