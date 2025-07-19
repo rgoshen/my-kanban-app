@@ -1,6 +1,5 @@
 "use client";
 
-import { ThemeToggle } from "@/components/theme-toggle";
 import {
   DndContext,
   DragEndEvent,
@@ -11,8 +10,11 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { useState } from "react";
-import { TaskCard } from "./task-card";
+
+import { ThemeToggle } from "@/components/theme-toggle";
+
 import { DroppableColumn } from "./droppable-column";
+import { TaskCard } from "./task-card";
 
 export interface Task {
   id: string;

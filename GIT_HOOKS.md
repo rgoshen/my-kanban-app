@@ -5,6 +5,7 @@ This project uses Husky to manage Git hooks that ensure code quality and consist
 ## Hooks Overview
 
 ### Pre-commit Hook
+
 - **Purpose**: Runs before each commit
 - **Actions**:
   - Runs ESLint with auto-fix on staged JavaScript/TypeScript files
@@ -13,6 +14,7 @@ This project uses Husky to manage Git hooks that ensure code quality and consist
 - **Benefits**: Ensures all committed code follows linting rules and formatting standards
 
 ### Pre-push Hook
+
 - **Purpose**: Runs before pushing to remote repository
 - **Actions**:
   - Runs comprehensive code quality checks
@@ -21,6 +23,7 @@ This project uses Husky to manage Git hooks that ensure code quality and consist
 - **Benefits**: Maintains code quality in the remote repository
 
 ### Commit-msg Hook
+
 - **Purpose**: Validates commit message format
 - **Actions**:
   - Enforces conventional commit message format
@@ -31,6 +34,7 @@ This project uses Husky to manage Git hooks that ensure code quality and consist
 ## Commit Message Examples
 
 ✅ **Valid commit messages:**
+
 ```
 feat(kanban): add drag and drop functionality
 fix(ui): resolve theme toggle button alignment
@@ -40,6 +44,7 @@ test(kanban): add unit tests for task cards
 ```
 
 ❌ **Invalid commit messages:**
+
 ```
 added drag and drop
 fixed bug
@@ -75,16 +80,19 @@ git push --no-verify
 ## Troubleshooting
 
 ### Hook not running
+
 1. Ensure Husky is installed: `npm install`
 2. Check if hooks are executable: `ls -la .husky/`
 3. Reinstall hooks: `npm run prepare`
 
 ### Linting errors
+
 1. Run `npm run lint:fix` to auto-fix issues
 2. Run `npm run format` to format code
 3. Address any remaining manual fixes
 
 ### Commit message rejected
+
 1. Follow the conventional commit format
 2. Keep description under 50 characters
 3. Use appropriate type and scope
@@ -96,4 +104,4 @@ git push --no-verify
 - `.husky/commit-msg` - Commit message validation
 - `package.json` - lint-staged configuration
 - `eslint.config.mjs` - ESLint rules
-- `.prettierrc` - Prettier formatting rules 
+- `.prettierrc` - Prettier formatting rules
