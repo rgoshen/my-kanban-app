@@ -1,8 +1,10 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import { Task } from "./kanban-board";
 
 interface TaskCardProps {
@@ -25,7 +27,7 @@ export function TaskCard({ task, isDragging = false }: TaskCardProps) {
     transition,
   };
 
-  const isDone = task.status === 'done';
+  const isDone = task.status === "done";
 
   return (
     <Card
@@ -34,25 +36,29 @@ export function TaskCard({ task, isDragging = false }: TaskCardProps) {
       {...attributes}
       {...listeners}
       className={`cursor-grab transition-all hover:shadow-md dark:bg-gray-800 dark:border-gray-700 ${
-        isBeingDragged || isDragging ? 'opacity-50 shadow-lg' : ''
+        isBeingDragged || isDragging ? "opacity-50 shadow-lg" : ""
       }`}
     >
       <CardHeader className="pb-2">
-        <CardTitle className={`text-sm font-medium text-gray-900 dark:text-white ${
-          isDone ? 'line-through opacity-60' : ''
-        }`}>
+        <CardTitle
+          className={`text-sm font-medium text-gray-900 dark:text-white ${
+            isDone ? "line-through opacity-60" : ""
+          }`}
+        >
           {task.title}
         </CardTitle>
       </CardHeader>
       {task.description && (
         <CardContent className="pt-0">
-          <p className={`text-sm text-gray-600 dark:text-gray-400 ${
-            isDone ? 'line-through opacity-60' : ''
-          }`}>
+          <p
+            className={`text-sm text-gray-600 dark:text-gray-400 ${
+              isDone ? "line-through opacity-60" : ""
+            }`}
+          >
             {task.description}
           </p>
         </CardContent>
       )}
     </Card>
   );
-} 
+}

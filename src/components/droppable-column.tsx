@@ -2,6 +2,7 @@
 
 import { useDroppable } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+
 import { Task } from "./kanban-board";
 import { TaskCard } from "./task-card";
 
@@ -37,7 +38,10 @@ export function DroppableColumn({ id, title, tasks, className = "" }: DroppableC
         </span>
       </div>
       <div ref={setNodeRef} className="space-y-3 min-h-[200px]">
-        <SortableContext items={tasks.map(task => task.id)} strategy={verticalListSortingStrategy}>
+        <SortableContext
+          items={tasks.map((task) => task.id)}
+          strategy={verticalListSortingStrategy}
+        >
           {tasks.map((task) => (
             <TaskCard key={task.id} task={task} />
           ))}
@@ -50,4 +54,4 @@ export function DroppableColumn({ id, title, tasks, className = "" }: DroppableC
       </div>
     </div>
   );
-} 
+}

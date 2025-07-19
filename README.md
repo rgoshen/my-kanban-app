@@ -39,7 +39,7 @@ The following Shadcn/ui components are available:
 The application supports three theme modes:
 
 1. **Light**: Bright theme for daytime use
-2. **Dark**: Dark theme for nighttime use  
+2. **Dark**: Dark theme for nighttime use
 3. **System**: Automatically follows your system preference
 
 Use the theme toggle button in the top-right corner to switch between themes.

@@ -149,9 +149,11 @@ When creating a pull request, please include:
 
 ```markdown
 ## Description
+
 Brief description of the changes made.
 
 ## Type of Change
+
 - [ ] Bug fix
 - [ ] New feature
 - [ ] Documentation update
@@ -159,14 +161,17 @@ Brief description of the changes made.
 - [ ] Performance improvement
 
 ## Testing
+
 - [ ] Tested locally
 - [ ] All tests pass
 - [ ] No console errors
 
 ## Screenshots (if applicable)
+
 Add screenshots to help explain your changes.
 
 ## Checklist
+
 - [ ] My code follows the style guidelines of this project
 - [ ] I have performed a self-review of my own code
 - [ ] I have commented my code, particularly in hard-to-understand areas
@@ -188,27 +193,33 @@ Add screenshots to help explain your changes.
 
 ```markdown
 ## Bug Description
+
 Clear and concise description of the bug.
 
 ## Steps to Reproduce
+
 1. Go to '...'
 2. Click on '...'
 3. Scroll down to '...'
 4. See error
 
 ## Expected Behavior
+
 What you expected to happen.
 
 ## Actual Behavior
+
 What actually happened.
 
 ## Environment
+
 - OS: [e.g. macOS, Windows, Linux]
 - Browser: [e.g. Chrome, Firefox, Safari]
 - Version: [e.g. 22]
 - Node.js version: [e.g. 18.17.0]
 
 ## Additional Context
+
 Add any other context about the problem here.
 ```
 
@@ -218,18 +229,23 @@ Add any other context about the problem here.
 
 ```markdown
 ## Feature Description
+
 Clear and concise description of the feature.
 
 ## Problem Statement
+
 What problem does this feature solve?
 
 ## Proposed Solution
+
 How would you like this feature to work?
 
 ## Alternative Solutions
+
 Any alternative solutions you've considered.
 
 ## Additional Context
+
 Add any other context or screenshots about the feature request.
 ```
 
