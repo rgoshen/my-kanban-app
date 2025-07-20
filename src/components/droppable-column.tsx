@@ -3,7 +3,7 @@
 import { useDroppable } from "@dnd-kit/core";
 import { useEffect, useState } from "react";
 
-import { Task } from "./kanban-board";
+import { Task } from "@/types/task";
 import { TaskCard } from "./task-card";
 
 interface DroppableColumnProps {
