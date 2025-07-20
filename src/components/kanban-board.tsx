@@ -9,9 +9,12 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
+import { Plus } from "lucide-react";
 import { useState, useEffect } from "react";
 
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 import { DroppableColumn } from "./droppable-column";
 import { TaskCard } from "./task-card";
@@ -195,6 +198,29 @@ export function KanbanBoard({ tasks: initialTasks = [] }: KanbanBoardProps) {
         <div className="mb-8 flex items-center justify-between">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Kanban Board</h1>
           <ThemeToggle />
+        </div>
+
+        {/* Add Task Button */}
+        <div className="mb-6">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  size="lg"
+                  className="flex items-center justify-center p-3"
+                  onClick={() => {
+                    // TODO: Implement task creation logic
+                    console.log("Create new task clicked");
+                  }}
+                >
+                  <Plus className="h-5 w-5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Add new task</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
 
         {isClient ? (
