@@ -4,6 +4,7 @@ import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { Calendar, Clock, User, AlertTriangle, Edit2, Check, X } from "lucide-react";
 import { useState } from "react";
+import { useIsClient } from "@/hooks/use-is-client";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -21,6 +22,7 @@ interface TaskCardProps {
 export function TaskCard({ task, onUpdateTask }: TaskCardProps) {
   const [isEditingAssignee, setIsEditingAssignee] = useState(false);
   const [assigneeInput, setAssigneeInput] = useState(task.assignee || "");
+  const isClient = useIsClient();
 
   const {
     attributes,
@@ -81,12 +83,12 @@ export function TaskCard({ task, onUpdateTask }: TaskCardProps) {
 
   return (
     <Card
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
+      ref={isClient ? setNodeRef : undefined}
+      style={isClient ? style : undefined}
+      {...(isClient ? attributes : { role: "button", tabIndex: 0 })}
+      {...(isClient ? listeners : {})}
       className={`group cursor-grab transition-all hover:shadow-md dark:bg-gray-800 dark:border-gray-700 ${
-        isBeingDragged ? "opacity-0" : ""
+        isClient && isBeingDragged ? "opacity-0" : ""
       } ${isOverdue ? "border-red-300 dark:border-red-600" : ""}`}
     >
       <CardHeader className="pb-3">
