@@ -93,7 +93,7 @@ export function TaskCard({ task, onUpdateTask }: TaskCardProps) {
       style={isClient ? style : undefined}
       {...(isClient ? attributes : { role: "button", tabIndex: 0 })}
       {...(isClient ? listeners : {})}
-      className={`group cursor-grab transition-all hover:shadow-md dark:bg-gray-800 border ${
+      className={`group cursor-grab transition-all shadow-md hover:shadow-lg dark:bg-gray-800 border ${
         isClient && isBeingDragged ? "opacity-0" : ""
       } ${isOverdue ? "border-2 border-red-300 dark:border-red-600" : priorityBorderColors[task.priority]}`}
     >
