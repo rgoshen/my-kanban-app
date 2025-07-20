@@ -9,11 +9,39 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 import { DroppableColumn } from "./droppable-column";
@@ -33,6 +61,16 @@ export interface Task {
 interface KanbanBoardProps {
   tasks?: Task[];
 }
+
+// Form validation schema
+const taskFormSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  description: z.string().optional(),
+  priority: z.enum(["low", "medium", "high"]),
+  assignee: z.string().optional(),
+});
+
+type TaskFormData = z.infer<typeof taskFormSchema>;
 
 export function KanbanBoard({ tasks: initialTasks = [] }: KanbanBoardProps) {
   const [isClient, setIsClient] = useState(false);
@@ -140,6 +178,17 @@ export function KanbanBoard({ tasks: initialTasks = [] }: KanbanBoardProps) {
         ],
   );
   const [activeTask, setActiveTask] = useState<Task | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const form = useForm<TaskFormData>({
+    resolver: zodResolver(taskFormSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      priority: "medium",
+      assignee: "",
+    },
+  });
 
   useEffect(() => {
     setIsClient(true);
@@ -192,6 +241,12 @@ export function KanbanBoard({ tasks: initialTasks = [] }: KanbanBoardProps) {
     );
   }
 
+  const onSubmit = (data: TaskFormData) => {
+    // TODO: Implement task creation logic
+    setIsDialogOpen(false);
+    form.reset();
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-6 dark:bg-gray-900">
       <div className="mx-auto max-w-7xl h-full">
@@ -205,16 +260,104 @@ export function KanbanBoard({ tasks: initialTasks = [] }: KanbanBoardProps) {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button
-                  size="lg"
-                  className="flex items-center justify-center p-3"
-                  onClick={() => {
-                    // TODO: Implement task creation logic
-                    console.log("Create new task clicked");
-                  }}
-                >
-                  <Plus className="h-5 w-5" />
-                </Button>
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button size="lg" className="flex items-center justify-center p-3">
+                      <Plus className="h-5 w-5" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>Create New Task</DialogTitle>
+                      <DialogDescription>
+                        Add a new task to your kanban board. Fill in the details below.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <Form {...form}>
+                      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                        <FormField
+                          control={form.control}
+                          name="title"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Title</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Enter task title" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="description"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Description</FormLabel>
+                              <FormControl>
+                                <Textarea
+                                  placeholder="Enter task description (optional)"
+                                  className="resize-none"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="priority"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Priority</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select priority" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="low">Low</SelectItem>
+                                  <SelectItem value="medium">Medium</SelectItem>
+                                  <SelectItem value="high">High</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="assignee"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Assignee</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Enter assignee name (optional)" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <div className="flex justify-end space-x-2 pt-4">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setIsDialogOpen(false)}
+                          >
+                            Cancel
+                          </Button>
+                          <Button type="submit">Create Task</Button>
+                        </div>
+                      </form>
+                    </Form>
+                  </DialogContent>
+                </Dialog>
               </TooltipTrigger>
               <TooltipContent>
                 <p>Add new task</p>
