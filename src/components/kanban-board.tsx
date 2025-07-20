@@ -9,7 +9,7 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { ThemeToggle } from "@/components/theme-toggle";
 
@@ -32,6 +32,7 @@ interface KanbanBoardProps {
 }
 
 export function KanbanBoard({ tasks: initialTasks = [] }: KanbanBoardProps) {
+  const [isClient, setIsClient] = useState(false);
   const [tasks, setTasks] = useState<Task[]>(
     initialTasks.length > 0
       ? initialTasks
@@ -84,9 +85,62 @@ export function KanbanBoard({ tasks: initialTasks = [] }: KanbanBoardProps) {
             dueDate: "2024-02-18",
             startDate: "2024-02-08",
           },
+          {
+            id: "6",
+            title: "Add more test cases",
+            description: "Expand test coverage for critical functionality",
+            status: "todo",
+            assignee: "Lisa Wang",
+            priority: "medium",
+            dueDate: "2024-02-28",
+            startDate: "2024-02-15",
+          },
+          {
+            id: "7",
+            title: "Update documentation",
+            description: "Refresh user guides and API documentation",
+            status: "todo",
+            assignee: "David Kim",
+            priority: "low",
+            dueDate: "2024-03-01",
+          },
+          {
+            id: "8",
+            title: "Performance testing",
+            description: "Run load tests and optimize performance bottlenecks",
+            status: "in-progress",
+            assignee: "Maria Garcia",
+            priority: "high",
+            dueDate: "2024-02-22",
+            startDate: "2024-02-10",
+          },
+          {
+            id: "9",
+            title: "Security audit",
+            description: "Conduct comprehensive security review and fix vulnerabilities",
+            status: "done",
+            assignee: "James Wilson",
+            priority: "high",
+            dueDate: "2024-02-12",
+            startDate: "2024-01-30",
+          },
+          {
+            id: "10",
+            title: "Code review",
+            description: "Review pull requests and ensure code quality standards",
+            status: "done",
+            assignee: "Sarah Johnson",
+            priority: "medium",
+            dueDate: "2024-02-08",
+            startDate: "2024-02-01",
+          },
         ],
   );
   const [activeTask, setActiveTask] = useState<Task | null>(null);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -112,11 +166,21 @@ export function KanbanBoard({ tasks: initialTasks = [] }: KanbanBoardProps) {
     if (!over) return;
 
     const taskId = active.id as string;
-    const newStatus = over.id as "todo" | "in-progress" | "done";
+    const overId = over.id as string;
 
-    setTasks((prevTasks) =>
-      prevTasks.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task)),
-    );
+    // Check if we're dropping on a column (status change)
+    if (["todo", "in-progress", "done"].includes(overId)) {
+      const newStatus = overId as "todo" | "in-progress" | "done";
+
+      // Find the current task
+      const currentTask = tasks.find((task) => task.id === taskId);
+      if (!currentTask) return;
+
+      // Update the task status
+      setTasks((prevTasks) =>
+        prevTasks.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task)),
+      );
+    }
   }
 
   function handleUpdateTask(taskId: string, updates: Partial<Task>) {
@@ -127,14 +191,48 @@ export function KanbanBoard({ tasks: initialTasks = [] }: KanbanBoardProps) {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6 dark:bg-gray-900">
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto max-w-7xl h-full">
         <div className="mb-8 flex items-center justify-between">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Kanban Board</h1>
           <ThemeToggle />
         </div>
 
-        <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+        {isClient ? (
+          <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+            <div className="flex flex-col gap-6 md:flex-row md:items-start h-full">
+              <DroppableColumn
+                id="todo"
+                title="To Do"
+                tasks={todoTasks}
+                className="bg-gray-100 dark:bg-gray-800"
+                onUpdateTask={handleUpdateTask}
+              />
+              <DroppableColumn
+                id="in-progress"
+                title="In Progress"
+                tasks={inProgressTasks}
+                className="bg-blue-50 dark:bg-blue-900/20"
+                onUpdateTask={handleUpdateTask}
+              />
+              <DroppableColumn
+                id="done"
+                title="Done"
+                tasks={doneTasks}
+                className="bg-green-50 dark:bg-green-900/20"
+                onUpdateTask={handleUpdateTask}
+              />
+            </div>
+
+            <DragOverlay>
+              {activeTask ? (
+                <div className="transform rotate-2 scale-105">
+                  <TaskCard task={activeTask} onUpdateTask={handleUpdateTask} />
+                </div>
+              ) : null}
+            </DragOverlay>
+          </DndContext>
+        ) : (
+          <div className="flex flex-col gap-6 md:flex-row md:items-start h-full">
             <DroppableColumn
               id="todo"
               title="To Do"
@@ -157,13 +255,7 @@ export function KanbanBoard({ tasks: initialTasks = [] }: KanbanBoardProps) {
               onUpdateTask={handleUpdateTask}
             />
           </div>
-
-          <DragOverlay>
-            {activeTask ? (
-              <TaskCard task={activeTask} isDragging onUpdateTask={handleUpdateTask} />
-            ) : null}
-          </DragOverlay>
-        </DndContext>
+        )}
       </div>
     </div>
   );

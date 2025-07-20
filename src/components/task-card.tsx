@@ -1,6 +1,6 @@
 "use client";
 
-import { useSortable } from "@dnd-kit/sortable";
+import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { Calendar, Clock, User, AlertTriangle, Edit2, Check, X } from "lucide-react";
 import { useState } from "react";
@@ -15,11 +15,10 @@ import { Task } from "./kanban-board";
 
 interface TaskCardProps {
   task: Task;
-  isDragging?: boolean;
   onUpdateTask?: (taskId: string, updates: Partial<Task>) => void;
 }
 
-export function TaskCard({ task, isDragging = false, onUpdateTask }: TaskCardProps) {
+export function TaskCard({ task, onUpdateTask }: TaskCardProps) {
   const [isEditingAssignee, setIsEditingAssignee] = useState(false);
   const [assigneeInput, setAssigneeInput] = useState(task.assignee || "");
 
@@ -28,13 +27,11 @@ export function TaskCard({ task, isDragging = false, onUpdateTask }: TaskCardPro
     listeners,
     setNodeRef,
     transform,
-    transition,
     isDragging: isBeingDragged,
-  } = useSortable({ id: task.id });
+  } = useDraggable({ id: task.id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
   };
 
   const isDone = task.status === "done";
@@ -89,7 +86,7 @@ export function TaskCard({ task, isDragging = false, onUpdateTask }: TaskCardPro
       {...attributes}
       {...listeners}
       className={`group cursor-grab transition-all hover:shadow-md dark:bg-gray-800 dark:border-gray-700 ${
-        isBeingDragged || isDragging ? "opacity-50 shadow-lg" : ""
+        isBeingDragged ? "opacity-0" : ""
       } ${isOverdue ? "border-red-300 dark:border-red-600" : ""}`}
     >
       <CardHeader className="pb-3">
