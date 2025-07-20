@@ -10,7 +10,7 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Kanban } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { TaskFormDialog, TaskFormData } from "./task-form-dialog";
 import { KanbanColumns } from "./kanban-columns";
@@ -80,7 +80,10 @@ export default function KanbanBoard() {
     <div className="min-h-screen bg-background p-8">
       <div className="mx-auto max-w-7xl">
         <div className="mb-8 flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-foreground">My Kanban Board</h1>
+          <div className="flex items-center gap-3">
+            <img src="/byte-bridge-logo.svg" alt="Kanban Board" className="h-8 w-8" />
+            <h1 className="text-3xl font-bold text-foreground">My Kanban Board</h1>
+          </div>
           <ThemeToggle />
         </div>
 
