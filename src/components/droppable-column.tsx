@@ -40,7 +40,7 @@ export function DroppableColumn({
   return (
     <div
       ref={isClient ? setNodeRef : undefined}
-      className={`flex flex-col space-y-4 rounded-lg p-4 flex-1 ${className}`}
+      className={`flex flex-col space-y-4 rounded-lg p-4 flex-1 bg-gray-50 dark:bg-gray-800/50 ${className}`}
     >
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">{title}</h2>
