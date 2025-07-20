@@ -13,21 +13,18 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { TaskFormDialog, TaskFormData } from "./task-form-dialog";
-import { DroppableColumn } from "./droppable-column";
+import { KanbanColumns } from "./kanban-columns";
 import { TaskCard } from "./task-card";
 import { Task } from "@/types/task";
 import { sampleTasks } from "@/data/sample-tasks";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useIsClient } from "@/hooks/use-is-client";
 
 export default function KanbanBoard() {
   // Initialize with sample data from separate file
   const [tasks, setTasks] = useState<Task[]>(sampleTasks);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  const isClient = useIsClient();
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -99,50 +96,11 @@ export default function KanbanBoard() {
 
         {isClient ? (
           <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-              <DroppableColumn
-                id="todo"
-                title="To Do"
-                tasks={tasks.filter((t) => t.status === "todo")}
-                onUpdateTask={handleUpdateTask}
-              />
-              <DroppableColumn
-                id="inprogress"
-                title="In Progress"
-                tasks={tasks.filter((t) => t.status === "inprogress")}
-                onUpdateTask={handleUpdateTask}
-              />
-              <DroppableColumn
-                id="done"
-                title="Done"
-                tasks={tasks.filter((t) => t.status === "done")}
-                onUpdateTask={handleUpdateTask}
-              />
-            </div>
-
+            <KanbanColumns tasks={tasks} onUpdateTask={handleUpdateTask} />
             <DragOverlay>{activeTask ? <TaskCard task={activeTask} /> : null}</DragOverlay>
           </DndContext>
         ) : (
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            <DroppableColumn
-              id="todo"
-              title="To Do"
-              tasks={tasks.filter((t) => t.status === "todo")}
-              onUpdateTask={handleUpdateTask}
-            />
-            <DroppableColumn
-              id="inprogress"
-              title="In Progress"
-              tasks={tasks.filter((t) => t.status === "inprogress")}
-              onUpdateTask={handleUpdateTask}
-            />
-            <DroppableColumn
-              id="done"
-              title="Done"
-              tasks={tasks.filter((t) => t.status === "done")}
-              onUpdateTask={handleUpdateTask}
-            />
-          </div>
+          <KanbanColumns tasks={tasks} onUpdateTask={handleUpdateTask} />
         )}
       </div>
     </div>

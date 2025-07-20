@@ -1,10 +1,9 @@
 "use client";
 
 import { useDroppable } from "@dnd-kit/core";
-import { useEffect, useState } from "react";
-
 import { Task } from "@/types/task";
 import { TaskCard } from "./task-card";
+import { useIsClient } from "@/hooks/use-is-client";
 
 interface DroppableColumnProps {
   id: string;
@@ -21,11 +20,7 @@ export function DroppableColumn({
   className = "",
   onUpdateTask,
 }: DroppableColumnProps) {
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  const isClient = useIsClient();
 
   const { setNodeRef } = useDroppable({ id });
 
