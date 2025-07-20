@@ -6,7 +6,7 @@ import { Calendar, Clock, User, AlertTriangle, Edit2, Check, X } from "lucide-re
 import { useState } from "react";
 import { useIsClient } from "@/hooks/use-is-client";
 
-import { EnhancedAvatar } from "@/components/ui/enhanced-avatar";
+import { SimpleAvatar } from "@/components/ui/simple-avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -155,7 +155,7 @@ export function TaskCard({ task, onUpdateTask }: TaskCardProps) {
             <div className="flex items-center gap-2 flex-1">
               {task.assignee ? (
                 <>
-                  <EnhancedAvatar assigneeName={task.assignee} size="md" className="h-8 w-8" />
+                  <SimpleAvatar assigneeName={task.assignee} size="md" className="h-8 w-8" />
                   <span className="text-xs text-gray-700 dark:text-gray-300 truncate">
                     {task.assignee}
                   </span>
