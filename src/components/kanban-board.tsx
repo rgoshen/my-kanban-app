@@ -1,17 +1,41 @@
 "use client";
 
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { TaskFormDialog, TaskFormData } from "./task-form-dialog";
-import { KanbanColumn } from "./kanban-column";
+import { DroppableColumn } from "./droppable-column";
+import { TaskCard } from "./task-card";
 import { Task } from "@/types/task";
 import { sampleTasks } from "@/data/sample-tasks";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function KanbanBoard() {
   // Initialize with sample data from separate file
   const [tasks, setTasks] = useState<Task[]>(sampleTasks);
+  const [activeTask, setActiveTask] = useState<Task | null>(null);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+  );
 
   const handleAddTask = (data: TaskFormData) => {
     setTasks((prev) => [
@@ -27,6 +51,31 @@ export default function KanbanBoard() {
         startDate: new Date().toISOString().split("T")[0], // Set start date to today
       },
     ]);
+  };
+
+  const handleDragStart = (event: DragStartEvent) => {
+    const task = tasks.find((t) => t.id === event.active.id);
+    setActiveTask(task || null);
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    setActiveTask(null);
+
+    if (!over) return;
+
+    const taskId = active.id as string;
+    const newStatus = over.id as "todo" | "inprogress" | "done";
+
+    if (newStatus === "todo" || newStatus === "inprogress" || newStatus === "done") {
+      setTasks((prev) =>
+        prev.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task)),
+      );
+    }
+  };
+
+  const handleUpdateTask = (taskId: string, updates: Partial<Task>) => {
+    setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, ...updates } : task)));
   };
 
   return (
@@ -48,14 +97,53 @@ export default function KanbanBoard() {
           </TooltipProvider>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          <KanbanColumn title="To Do" tasks={tasks.filter((t) => t.status === "todo")} />
-          <KanbanColumn
-            title="In Progress"
-            tasks={tasks.filter((t) => t.status === "inprogress")}
-          />
-          <KanbanColumn title="Done" tasks={tasks.filter((t) => t.status === "done")} />
-        </div>
+        {isClient ? (
+          <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+              <DroppableColumn
+                id="todo"
+                title="To Do"
+                tasks={tasks.filter((t) => t.status === "todo")}
+                onUpdateTask={handleUpdateTask}
+              />
+              <DroppableColumn
+                id="inprogress"
+                title="In Progress"
+                tasks={tasks.filter((t) => t.status === "inprogress")}
+                onUpdateTask={handleUpdateTask}
+              />
+              <DroppableColumn
+                id="done"
+                title="Done"
+                tasks={tasks.filter((t) => t.status === "done")}
+                onUpdateTask={handleUpdateTask}
+              />
+            </div>
+
+            <DragOverlay>{activeTask ? <TaskCard task={activeTask} /> : null}</DragOverlay>
+          </DndContext>
+        ) : (
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            <DroppableColumn
+              id="todo"
+              title="To Do"
+              tasks={tasks.filter((t) => t.status === "todo")}
+              onUpdateTask={handleUpdateTask}
+            />
+            <DroppableColumn
+              id="inprogress"
+              title="In Progress"
+              tasks={tasks.filter((t) => t.status === "inprogress")}
+              onUpdateTask={handleUpdateTask}
+            />
+            <DroppableColumn
+              id="done"
+              title="Done"
+              tasks={tasks.filter((t) => t.status === "done")}
+              onUpdateTask={handleUpdateTask}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
