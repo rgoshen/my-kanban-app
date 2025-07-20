@@ -21,6 +21,10 @@ export interface Task {
   title: string;
   description?: string;
   status: "todo" | "in-progress" | "done";
+  assignee?: string;
+  dueDate?: string;
+  priority: "low" | "medium" | "high";
+  startDate?: string;
 }
 
 interface KanbanBoardProps {
@@ -28,7 +32,60 @@ interface KanbanBoardProps {
 }
 
 export function KanbanBoard({ tasks: initialTasks = [] }: KanbanBoardProps) {
-  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+  const [tasks, setTasks] = useState<Task[]>(
+    initialTasks.length > 0
+      ? initialTasks
+      : [
+          {
+            id: "1",
+            title: "Design new landing page",
+            description: "Create wireframes and mockups for the new landing page design",
+            status: "todo",
+            assignee: "Sarah Johnson",
+            dueDate: "2024-02-15",
+            priority: "high",
+            startDate: "2024-02-01",
+          },
+          {
+            id: "2",
+            title: "Implement user authentication",
+            description: "Add login and registration functionality with JWT tokens",
+            status: "in-progress",
+            assignee: "Mike Chen",
+            dueDate: "2024-02-20",
+            priority: "medium",
+            startDate: "2024-02-05",
+          },
+          {
+            id: "3",
+            title: "Write API documentation",
+            description: "Create comprehensive API documentation with examples",
+            status: "done",
+            assignee: "Emily Davis",
+            dueDate: "2024-02-10",
+            priority: "low",
+            startDate: "2024-01-25",
+          },
+          {
+            id: "4",
+            title: "Fix mobile responsiveness",
+            description: "Ensure the app works properly on all mobile devices",
+            status: "todo",
+            priority: "medium",
+            dueDate: "2024-02-25",
+          },
+          {
+            id: "5",
+            title: "Database optimization",
+            description: "Optimize database queries and add proper indexing",
+            status: "in-progress",
+            assignee: "Alex Thompson",
+            priority: "high",
+            dueDate: "2024-02-18",
+            startDate: "2024-02-08",
+          },
+        ],
+  );
   const [activeTask, setActiveTask] = useState<Task | null>(null);
 
   const sensors = useSensors(
@@ -62,6 +119,12 @@ export function KanbanBoard({ tasks: initialTasks = [] }: KanbanBoardProps) {
     );
   }
 
+  function handleUpdateTask(taskId: string, updates: Partial<Task>) {
+    setTasks((prevTasks) =>
+      prevTasks.map((task) => (task.id === taskId ? { ...task, ...updates } : task)),
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 p-6 dark:bg-gray-900">
       <div className="mx-auto max-w-7xl">
@@ -77,22 +140,29 @@ export function KanbanBoard({ tasks: initialTasks = [] }: KanbanBoardProps) {
               title="To Do"
               tasks={todoTasks}
               className="bg-gray-100 dark:bg-gray-800"
+              onUpdateTask={handleUpdateTask}
             />
             <DroppableColumn
               id="in-progress"
               title="In Progress"
               tasks={inProgressTasks}
               className="bg-blue-50 dark:bg-blue-900/20"
+              onUpdateTask={handleUpdateTask}
             />
             <DroppableColumn
               id="done"
               title="Done"
               tasks={doneTasks}
               className="bg-green-50 dark:bg-green-900/20"
+              onUpdateTask={handleUpdateTask}
             />
           </div>
 
-          <DragOverlay>{activeTask ? <TaskCard task={activeTask} isDragging /> : null}</DragOverlay>
+          <DragOverlay>
+            {activeTask ? (
+              <TaskCard task={activeTask} isDragging onUpdateTask={handleUpdateTask} />
+            ) : null}
+          </DragOverlay>
         </DndContext>
       </div>
     </div>

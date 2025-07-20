@@ -11,9 +11,16 @@ interface DroppableColumnProps {
   title: string;
   tasks: Task[];
   className?: string;
+  onUpdateTask?: (taskId: string, updates: Partial<Task>) => void;
 }
 
-export function DroppableColumn({ id, title, tasks, className = "" }: DroppableColumnProps) {
+export function DroppableColumn({
+  id,
+  title,
+  tasks,
+  className = "",
+  onUpdateTask,
+}: DroppableColumnProps) {
   const { setNodeRef } = useDroppable({ id });
 
   const getBadgeColor = (status: string) => {
@@ -43,7 +50,7 @@ export function DroppableColumn({ id, title, tasks, className = "" }: DroppableC
           strategy={verticalListSortingStrategy}
         >
           {tasks.map((task) => (
-            <TaskCard key={task.id} task={task} />
+            <TaskCard key={task.id} task={task} onUpdateTask={onUpdateTask} />
           ))}
         </SortableContext>
         {tasks.length === 0 && (
