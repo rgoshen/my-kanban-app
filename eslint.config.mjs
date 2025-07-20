@@ -10,8 +10,6 @@ const __dirname = dirname(__filename);
 const require = createRequire(import.meta.url);
 const compat = new FlatCompat({
   baseDirectory: __dirname,
-  recommendedConfig: { ...require("eslint-config-next") },
-  allConfig: { ...require("eslint-config-next") },
 });
 
 export default [

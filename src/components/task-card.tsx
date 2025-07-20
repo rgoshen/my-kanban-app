@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
-import { Task } from "./kanban-board";
+import { Task } from "@/types/task";
 
 interface TaskCardProps {
   task: Task;
@@ -36,13 +36,13 @@ export function TaskCard({ task, onUpdateTask }: TaskCardProps) {
 
   const isDone = task.status === "done";
 
-  const priorityColors = {
-    low: "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400",
-    medium: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400",
-    high: "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400",
+  const priorityColors: Record<Task["priority"], string> = {
+    low: "bg-green-100 text-green-800",
+    medium: "bg-yellow-100 text-yellow-800",
+    high: "bg-red-100 text-red-800",
   };
 
-  const priorityIcons = {
+  const priorityIcons: Record<Task["priority"], string> = {
     low: "🟢",
     medium: "🟡",
     high: "🔴",
