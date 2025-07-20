@@ -56,7 +56,7 @@ export function EnhancedAvatar({
 
   return (
     <Avatar className={cn(sizeClasses[size], className)}>
-      {avatarData?.imageUrl && !isLoading && (
+      {avatarData?.imageUrl && (
         <AvatarImage
           src={avatarData.imageUrl}
           alt={`Avatar for ${assigneeName}`}

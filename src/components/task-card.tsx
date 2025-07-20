@@ -155,7 +155,7 @@ export function TaskCard({ task, onUpdateTask }: TaskCardProps) {
             <div className="flex items-center gap-2 flex-1">
               {task.assignee ? (
                 <>
-                  <EnhancedAvatar assigneeName={task.assignee} size="sm" className="h-5 w-5" />
+                  <EnhancedAvatar assigneeName={task.assignee} size="md" className="h-8 w-8" />
                   <span className="text-xs text-gray-700 dark:text-gray-300 truncate">
                     {task.assignee}
                   </span>
