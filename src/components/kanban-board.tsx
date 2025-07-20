@@ -242,7 +242,18 @@ export function KanbanBoard({ tasks: initialTasks = [] }: KanbanBoardProps) {
   }
 
   const onSubmit = (data: TaskFormData) => {
-    // TODO: Implement task creation logic
+    // Add new task to the end of the array with status "todo"
+    setTasks((prev) => [
+      ...prev,
+      {
+        id: crypto.randomUUID(),
+        title: data.title,
+        description: data.description,
+        priority: data.priority,
+        assignee: data.assignee,
+        status: "todo",
+      },
+    ]);
     setIsDialogOpen(false);
     form.reset();
   };
