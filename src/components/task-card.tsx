@@ -44,6 +44,12 @@ export function TaskCard({ task, onUpdateTask }: TaskCardProps) {
     high: "bg-red-100 text-red-800",
   };
 
+  const priorityBorderColors: Record<Task["priority"], string> = {
+    low: "border-green-200 dark:border-green-700",
+    medium: "border-yellow-200 dark:border-yellow-700",
+    high: "border-red-200 dark:border-red-700",
+  };
+
   const priorityIcons: Record<Task["priority"], string> = {
     low: "🟢",
     medium: "🟡",
@@ -87,9 +93,9 @@ export function TaskCard({ task, onUpdateTask }: TaskCardProps) {
       style={isClient ? style : undefined}
       {...(isClient ? attributes : { role: "button", tabIndex: 0 })}
       {...(isClient ? listeners : {})}
-      className={`group cursor-grab transition-all hover:shadow-md dark:bg-gray-800 dark:border-gray-700 ${
+      className={`group cursor-grab transition-all shadow-md hover:shadow-lg dark:bg-gray-800 border ${
         isClient && isBeingDragged ? "opacity-0" : ""
-      } ${isOverdue ? "border-red-300 dark:border-red-600" : ""}`}
+      } ${isOverdue ? "border-2 border-red-300 dark:border-red-600" : priorityBorderColors[task.priority]}`}
     >
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-2">

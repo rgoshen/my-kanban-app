@@ -8,8 +8,8 @@ export const sampleTasks: Task[] = [
     priority: "high",
     assignee: "John Doe",
     status: "todo",
-    dueDate: "2024-02-15",
-    startDate: "2024-02-01",
+    dueDate: "2025-08-15",
+    startDate: "2025-07-25",
   },
   {
     id: "2",
@@ -18,8 +18,8 @@ export const sampleTasks: Task[] = [
     priority: "medium",
     assignee: "Jane Smith",
     status: "inprogress",
-    dueDate: "2024-02-20",
-    startDate: "2024-02-05",
+    dueDate: "2025-09-20",
+    startDate: "2025-08-05",
   },
   {
     id: "3",
@@ -28,8 +28,8 @@ export const sampleTasks: Task[] = [
     priority: "low",
     assignee: "Bob Johnson",
     status: "done",
-    dueDate: "2024-02-10",
-    startDate: "2024-01-25",
+    dueDate: "2025-07-10",
+    startDate: "2025-06-25",
   },
   {
     id: "4",
@@ -38,8 +38,8 @@ export const sampleTasks: Task[] = [
     priority: "high",
     assignee: "Alice Brown",
     status: "inprogress",
-    dueDate: "2024-02-18",
-    startDate: "2024-02-08",
+    dueDate: "2025-08-18",
+    startDate: "2025-07-28",
   },
   {
     id: "5",
@@ -48,7 +48,7 @@ export const sampleTasks: Task[] = [
     priority: "low",
     assignee: "Charlie Wilson",
     status: "inprogress",
-    dueDate: "2024-02-25",
-    startDate: "2024-02-12",
+    dueDate: "2025-09-25",
+    startDate: "2025-08-12",
   },
 ];
