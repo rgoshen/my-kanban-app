@@ -95,7 +95,7 @@ export function TaskCard({ task, onUpdateTask }: TaskCardProps) {
       {...(isClient ? listeners : {})}
       className={`group cursor-grab transition-all hover:shadow-md dark:bg-gray-800 border ${
         isClient && isBeingDragged ? "opacity-0" : ""
-      } ${isOverdue ? "border-red-300 dark:border-red-600" : priorityBorderColors[task.priority]}`}
+      } ${isOverdue ? "border-2 border-red-300 dark:border-red-600" : priorityBorderColors[task.priority]}`}
     >
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-2">
