@@ -20,6 +20,11 @@ import { sampleTasks } from "@/data/sample-tasks";
 import { useState } from "react";
 import { useIsClient } from "@/hooks/use-is-client";
 import { ThemeToggle } from "./theme-toggle";
+import { parseAssignees } from "@/lib/utils";
+
+interface TaskFormSubmitData extends Omit<TaskFormData, "assignees"> {
+  assignees: string[];
+}
 
 export default function KanbanBoard() {
   // Initialize with sample data from separate file
@@ -35,7 +40,7 @@ export default function KanbanBoard() {
     }),
   );
 
-  const handleAddTask = (data: TaskFormData) => {
+  const handleAddTask = (data: TaskFormSubmitData) => {
     setTasks((prev) => [
       ...prev,
       {
@@ -43,7 +48,7 @@ export default function KanbanBoard() {
         title: data.title,
         description: data.description,
         priority: data.priority,
-        assignee: data.assignee,
+        assignees: data.assignees || [], // Provide empty array as default
         status: "todo",
         dueDate: data.dueDate,
         startDate: new Date().toISOString().split("T")[0], // Set start date to today

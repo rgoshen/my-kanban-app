@@ -29,6 +29,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useState } from "react";
+import { parseAssignees, validateAssigneeNames } from "@/lib/utils";
 
 const taskFormSchema = z.object({
   title: z
@@ -38,12 +39,16 @@ const taskFormSchema = z.object({
     .trim(),
   description: z.string().max(500, "Description must be less than 500 characters").optional(),
   priority: z.enum(["low", "medium", "high"]),
-  assignee: z
+  assignees: z
     .string()
-    .min(1, "Assignee is required")
-    .max(50, "Assignee name must be less than 50 characters")
+    .min(1, "At least one assignee is required")
+    .max(200, "Assignee names must be less than 200 characters")
     .trim()
-    .regex(/^[a-zA-Z\s]+$/, "Assignee name can only contain letters and spaces"),
+    .refine((value) => {
+      const names = parseAssignees(value);
+      const validation = validateAssigneeNames(names);
+      return validation.isValid;
+    }, "Invalid assignee names"),
   dueDate: z
     .string()
     .optional()
@@ -58,7 +63,11 @@ const taskFormSchema = z.object({
 
 export type TaskFormData = z.infer<typeof taskFormSchema>;
 
-export function TaskFormDialog({ onSubmit }: { onSubmit: (data: TaskFormData) => void }) {
+interface TaskFormSubmitData extends Omit<TaskFormData, "assignees"> {
+  assignees: string[];
+}
+
+export function TaskFormDialog({ onSubmit }: { onSubmit: (data: TaskFormSubmitData) => void }) {
   const [open, setOpen] = useState(false);
   const form = useForm<TaskFormData>({
     resolver: zodResolver(taskFormSchema),
@@ -66,14 +75,20 @@ export function TaskFormDialog({ onSubmit }: { onSubmit: (data: TaskFormData) =>
       title: "",
       description: "",
       priority: "medium",
-      assignee: "",
+      assignees: "",
       dueDate: "",
     },
     mode: "onBlur", // Validate on blur for better UX
   });
 
   const handleSubmit = (data: TaskFormData) => {
-    onSubmit(data);
+    // Convert comma-separated assignees string to array
+    const assigneesArray = parseAssignees(data.assignees);
+
+    onSubmit({
+      ...data,
+      assignees: assigneesArray, // Pass as array for type compatibility
+    });
     setOpen(false);
     form.reset();
   };
@@ -148,12 +163,12 @@ export function TaskFormDialog({ onSubmit }: { onSubmit: (data: TaskFormData) =>
             />
             <FormField
               control={form.control}
-              name="assignee"
+              name="assignees"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Assignee *</FormLabel>
+                  <FormLabel>Assignees *</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter assignee name" {...field} />
+                    <Input placeholder="Enter assignee names (comma separated)" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

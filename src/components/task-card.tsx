@@ -2,7 +2,7 @@
 
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
-import { Calendar, Clock, User, AlertTriangle, Edit2, Check, X } from "lucide-react";
+import { Calendar, Clock, Users, AlertTriangle, Edit2, Check, X, Plus } from "lucide-react";
 import { useState } from "react";
 import { useIsClient } from "@/hooks/use-is-client";
 
@@ -13,6 +13,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
 import { Task } from "@/types/task";
+import {
+  parseAssignees,
+  formatAssignees,
+  validateAssigneeNames,
+  MAX_DISPLAYED_ASSIGNEES,
+} from "@/lib/utils";
 
 interface TaskCardProps {
   task: Task;
@@ -20,8 +26,9 @@ interface TaskCardProps {
 }
 
 export function TaskCard({ task, onUpdateTask }: TaskCardProps) {
-  const [isEditingAssignee, setIsEditingAssignee] = useState(false);
-  const [assigneeInput, setAssigneeInput] = useState(task.assignee || "");
+  const [isEditingAssignees, setIsEditingAssignees] = useState(false);
+  const [assigneesInput, setAssigneesInput] = useState(formatAssignees(task.assignees || []));
+  const [validationError, setValidationError] = useState<string | null>(null);
   const isClient = useIsClient();
 
   const {
@@ -64,19 +71,30 @@ export function TaskCard({ task, onUpdateTask }: TaskCardProps) {
     });
   };
 
-  const handleAssigneeSave = () => {
-    if (onUpdateTask) {
-      onUpdateTask(task.id, { assignee: assigneeInput });
+  const handleAssigneesSave = () => {
+    const assignees = parseAssignees(assigneesInput);
+    const validation = validateAssigneeNames(assignees);
+
+    if (!validation.isValid) {
+      setValidationError(validation.error || "Invalid assignee names");
+      return;
     }
-    setIsEditingAssignee(false);
+
+    if (onUpdateTask) {
+      onUpdateTask(task.id, { assignees });
+    }
+    setIsEditingAssignees(false);
+    setValidationError(null);
   };
 
-  const handleAssigneeCancel = () => {
-    setAssigneeInput(task.assignee || "");
-    setIsEditingAssignee(false);
+  const handleAssigneesCancel = () => {
+    setAssigneesInput(formatAssignees(task.assignees || []));
+    setIsEditingAssignees(false);
+    setValidationError(null);
   };
 
   const isOverdue = task.dueDate && new Date(task.dueDate) < new Date();
+  const assignees = task.assignees || [];
 
   return (
     <Card
@@ -119,55 +137,70 @@ export function TaskCard({ task, onUpdateTask }: TaskCardProps) {
           </p>
         )}
 
-        {/* Assignee */}
-        <div className="flex items-center gap-2">
-          <User className="h-3 w-3 text-gray-500" />
-          {isEditingAssignee ? (
-            <div className="flex items-center gap-1 flex-1">
-              <Input
-                value={assigneeInput}
-                onChange={(e) => setAssigneeInput(e.target.value)}
-                className="h-6 text-xs"
-                placeholder="Enter assignee name"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") handleAssigneeSave();
-                  if (e.key === "Escape") handleAssigneeCancel();
-                }}
-              />
-              <Button
-                size="sm"
-                variant="ghost"
-                className="h-6 w-6 p-0"
-                onClick={handleAssigneeSave}
-              >
-                <Check className="h-3 w-3" />
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="h-6 w-6 p-0"
-                onClick={handleAssigneeCancel}
-              >
-                <X className="h-3 w-3" />
-              </Button>
+        {/* Assignees */}
+        <div className="flex items-start gap-2">
+          <Users className="h-3 w-3 text-gray-500 mt-1 flex-shrink-0" />
+          {isEditingAssignees ? (
+            <div className="flex flex-col gap-1 flex-1">
+              <div className="flex items-center gap-1">
+                <Input
+                  value={assigneesInput}
+                  onChange={(e) => {
+                    setAssigneesInput(e.target.value);
+                    setValidationError(null); // Clear error when user types
+                  }}
+                  className="h-6 text-xs"
+                  placeholder="Enter assignee names (comma separated)"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleAssigneesSave();
+                    if (e.key === "Escape") handleAssigneesCancel();
+                  }}
+                />
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-6 w-6 p-0"
+                  onClick={handleAssigneesSave}
+                >
+                  <Check className="h-3 w-3" />
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-6 w-6 p-0"
+                  onClick={handleAssigneesCancel}
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              </div>
+              {validationError && (
+                <p className="text-xs text-red-600 dark:text-red-400">{validationError}</p>
+              )}
             </div>
           ) : (
-            <div className="flex items-center gap-2 flex-1">
-              {task.assignee ? (
-                <>
-                  <SimpleAvatar assigneeName={task.assignee} size="md" className="h-8 w-8" />
-                  <span className="text-xs text-gray-700 dark:text-gray-300 truncate">
-                    {task.assignee}
-                  </span>
-                </>
+            <div className="flex items-start gap-2 flex-1">
+              {assignees.length > 0 ? (
+                <div className="flex flex-wrap items-center gap-1 flex-1">
+                  {assignees.slice(0, MAX_DISPLAYED_ASSIGNEES).map((assignee, index) => (
+                    <div key={index} className="flex items-center gap-1">
+                      <SimpleAvatar assigneeName={assignee} size="sm" className="h-6 w-6" />
+                      <span className="text-xs text-gray-700 dark:text-gray-300">{assignee}</span>
+                    </div>
+                  ))}
+                  {assignees.length > MAX_DISPLAYED_ASSIGNEES && (
+                    <Badge variant="secondary" className="text-xs">
+                      +{assignees.length - MAX_DISPLAYED_ASSIGNEES} more
+                    </Badge>
+                  )}
+                </div>
               ) : (
                 <span className="text-xs text-gray-500 italic">Unassigned</span>
               )}
               <Button
                 size="sm"
                 variant="ghost"
-                className="h-4 w-4 p-0 ml-auto opacity-0 group-hover:opacity-100 transition-opacity"
-                onClick={() => setIsEditingAssignee(true)}
+                className="h-4 w-4 p-0 ml-auto opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
+                onClick={() => setIsEditingAssignees(true)}
               >
                 <Edit2 className="h-3 w-3" />
               </Button>
