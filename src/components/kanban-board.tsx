@@ -36,6 +36,12 @@ export default function KanbanBoard() {
   );
 
   const handleAddTask = (data: TaskFormData) => {
+    // Convert comma-separated assignees string to array
+    const assigneesArray = data.assignees
+      .split(",")
+      .map((name) => name.trim())
+      .filter((name) => name.length > 0);
+
     setTasks((prev) => [
       ...prev,
       {
@@ -43,7 +49,7 @@ export default function KanbanBoard() {
         title: data.title,
         description: data.description,
         priority: data.priority,
-        assignee: data.assignee,
+        assignees: assigneesArray,
         status: "todo",
         dueDate: data.dueDate,
         startDate: new Date().toISOString().split("T")[0], // Set start date to today

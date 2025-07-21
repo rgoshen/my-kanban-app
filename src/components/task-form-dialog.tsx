@@ -38,12 +38,25 @@ const taskFormSchema = z.object({
     .trim(),
   description: z.string().max(500, "Description must be less than 500 characters").optional(),
   priority: z.enum(["low", "medium", "high"]),
-  assignee: z
+  assignees: z
     .string()
-    .min(1, "Assignee is required")
-    .max(50, "Assignee name must be less than 50 characters")
+    .min(1, "At least one assignee is required")
+    .max(200, "Assignee names must be less than 200 characters")
     .trim()
-    .regex(/^[a-zA-Z\s]+$/, "Assignee name can only contain letters and spaces"),
+    .refine((value) => {
+      const names = value
+        .split(",")
+        .map((name) => name.trim())
+        .filter((name) => name.length > 0);
+      return names.length > 0;
+    }, "At least one assignee is required")
+    .refine((value) => {
+      const names = value
+        .split(",")
+        .map((name) => name.trim())
+        .filter((name) => name.length > 0);
+      return names.every((name) => /^[a-zA-Z\s]+$/.test(name));
+    }, "Assignee names can only contain letters and spaces"),
   dueDate: z
     .string()
     .optional()
@@ -66,14 +79,23 @@ export function TaskFormDialog({ onSubmit }: { onSubmit: (data: TaskFormData) =>
       title: "",
       description: "",
       priority: "medium",
-      assignee: "",
+      assignees: "",
       dueDate: "",
     },
     mode: "onBlur", // Validate on blur for better UX
   });
 
   const handleSubmit = (data: TaskFormData) => {
-    onSubmit(data);
+    // Convert comma-separated assignees string to array
+    const assigneesArray = data.assignees
+      .split(",")
+      .map((name) => name.trim())
+      .filter((name) => name.length > 0);
+
+    onSubmit({
+      ...data,
+      assignees: assigneesArray.join(", "), // Keep as string for form compatibility
+    });
     setOpen(false);
     form.reset();
   };
@@ -148,12 +170,12 @@ export function TaskFormDialog({ onSubmit }: { onSubmit: (data: TaskFormData) =>
             />
             <FormField
               control={form.control}
-              name="assignee"
+              name="assignees"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Assignee *</FormLabel>
+                  <FormLabel>Assignees *</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter assignee name" {...field} />
+                    <Input placeholder="Enter assignee names (comma separated)" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
