@@ -33,7 +33,7 @@ export function formatAssignees(assignees: string[]): string {
  */
 export function validateAssigneeNames(names: string[]): { isValid: boolean; error?: string } {
   if (names.length === 0) {
-    return { isValid: false, error: "At least one assignee is required" };
+    return { isValid: true }; // Allow empty arrays for unassigned tasks
   }
 
   // Check for valid characters: letters, spaces, hyphens, apostrophes, and accented characters
