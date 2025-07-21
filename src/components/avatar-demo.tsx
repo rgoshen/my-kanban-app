@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { EnhancedAvatar } from "@/components/ui/enhanced-avatar";
+import { SimpleAvatar } from "@/components/ui/simple-avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -61,15 +61,15 @@ export function AvatarDemo() {
               <div className="flex items-center gap-4 mt-2">
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-gray-600">Small:</span>
-                  <EnhancedAvatar assigneeName={customName} size="sm" />
+                  <SimpleAvatar assigneeName={customName} size="sm" />
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-gray-600">Medium:</span>
-                  <EnhancedAvatar assigneeName={customName} size="md" />
+                  <SimpleAvatar assigneeName={customName} size="md" />
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-gray-600">Large:</span>
-                  <EnhancedAvatar assigneeName={customName} size="lg" />
+                  <SimpleAvatar assigneeName={customName} size="lg" />
                 </div>
                 <span className="text-sm text-gray-500 ml-4">&ldquo;{customName}&rdquo;</span>
               </div>
@@ -85,7 +85,7 @@ export function AvatarDemo() {
                   key={`${name}-${refreshKey}-${index}`}
                   className="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                 >
-                  <EnhancedAvatar assigneeName={name} size="md" />
+                  <SimpleAvatar assigneeName={name} size="md" />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{name}</p>
                     <p className="text-xs text-gray-500 truncate">
@@ -107,15 +107,15 @@ export function AvatarDemo() {
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">Empty:</span>
-                <EnhancedAvatar assigneeName="" size="md" />
+                <SimpleAvatar assigneeName="" size="md" />
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">Whitespace:</span>
-                <EnhancedAvatar assigneeName="   " size="md" />
+                <SimpleAvatar assigneeName="   " size="md" />
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">Single char:</span>
-                <EnhancedAvatar assigneeName="A" size="md" />
+                <SimpleAvatar assigneeName="A" size="md" />
               </div>
             </div>
           </div>
