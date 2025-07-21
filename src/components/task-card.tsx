@@ -13,7 +13,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
 import { Task } from "@/types/task";
-import { parseAssignees, formatAssignees, validateAssigneeNames } from "@/lib/utils";
+import {
+  parseAssignees,
+  formatAssignees,
+  validateAssigneeNames,
+  MAX_DISPLAYED_ASSIGNEES,
+} from "@/lib/utils";
 
 interface TaskCardProps {
   task: Task;
@@ -175,15 +180,15 @@ export function TaskCard({ task, onUpdateTask }: TaskCardProps) {
             <div className="flex items-start gap-2 flex-1">
               {task.assignees.length > 0 ? (
                 <div className="flex flex-wrap items-center gap-1 flex-1">
-                  {task.assignees.slice(0, 3).map((assignee, index) => (
+                  {task.assignees.slice(0, MAX_DISPLAYED_ASSIGNEES).map((assignee, index) => (
                     <div key={index} className="flex items-center gap-1">
                       <SimpleAvatar assigneeName={assignee} size="sm" className="h-6 w-6" />
                       <span className="text-xs text-gray-700 dark:text-gray-300">{assignee}</span>
                     </div>
                   ))}
-                  {task.assignees.length > 3 && (
+                  {task.assignees.length > MAX_DISPLAYED_ASSIGNEES && (
                     <Badge variant="secondary" className="text-xs">
-                      +{task.assignees.length - 3} more
+                      +{task.assignees.length - MAX_DISPLAYED_ASSIGNEES} more
                     </Badge>
                   )}
                 </div>

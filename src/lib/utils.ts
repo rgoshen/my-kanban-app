@@ -6,6 +6,11 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
+ * Maximum number of assignees to display before showing overflow indicator
+ */
+export const MAX_DISPLAYED_ASSIGNEES = 3;
+
+/**
  * Parse comma-separated assignee names into an array
  * @param assigneesString - Comma-separated string of assignee names
  * @returns Array of trimmed, non-empty assignee names
