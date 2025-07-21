@@ -27,7 +27,7 @@ interface TaskCardProps {
 
 export function TaskCard({ task, onUpdateTask }: TaskCardProps) {
   const [isEditingAssignees, setIsEditingAssignees] = useState(false);
-  const [assigneesInput, setAssigneesInput] = useState(formatAssignees(task.assignees));
+  const [assigneesInput, setAssigneesInput] = useState(formatAssignees(task.assignees || []));
   const [validationError, setValidationError] = useState<string | null>(null);
   const isClient = useIsClient();
 
@@ -88,12 +88,13 @@ export function TaskCard({ task, onUpdateTask }: TaskCardProps) {
   };
 
   const handleAssigneesCancel = () => {
-    setAssigneesInput(formatAssignees(task.assignees));
+    setAssigneesInput(formatAssignees(task.assignees || []));
     setIsEditingAssignees(false);
     setValidationError(null);
   };
 
   const isOverdue = task.dueDate && new Date(task.dueDate) < new Date();
+  const assignees = task.assignees || [];
 
   return (
     <Card
@@ -178,17 +179,17 @@ export function TaskCard({ task, onUpdateTask }: TaskCardProps) {
             </div>
           ) : (
             <div className="flex items-start gap-2 flex-1">
-              {task.assignees.length > 0 ? (
+              {assignees.length > 0 ? (
                 <div className="flex flex-wrap items-center gap-1 flex-1">
-                  {task.assignees.slice(0, MAX_DISPLAYED_ASSIGNEES).map((assignee, index) => (
+                  {assignees.slice(0, MAX_DISPLAYED_ASSIGNEES).map((assignee, index) => (
                     <div key={index} className="flex items-center gap-1">
                       <SimpleAvatar assigneeName={assignee} size="sm" className="h-6 w-6" />
                       <span className="text-xs text-gray-700 dark:text-gray-300">{assignee}</span>
                     </div>
                   ))}
-                  {task.assignees.length > MAX_DISPLAYED_ASSIGNEES && (
+                  {assignees.length > MAX_DISPLAYED_ASSIGNEES && (
                     <Badge variant="secondary" className="text-xs">
-                      +{task.assignees.length - MAX_DISPLAYED_ASSIGNEES} more
+                      +{assignees.length - MAX_DISPLAYED_ASSIGNEES} more
                     </Badge>
                   )}
                 </div>

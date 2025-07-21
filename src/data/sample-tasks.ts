@@ -51,4 +51,13 @@ export const sampleTasks: Task[] = [
     dueDate: "2025-09-25",
     startDate: "2025-08-12",
   },
+  {
+    id: "6",
+    title: "Review Code Quality",
+    description: "Perform code review and refactoring",
+    priority: "medium",
+    status: "todo",
+    dueDate: "2025-08-30",
+    startDate: "2025-08-15",
+  },
 ];

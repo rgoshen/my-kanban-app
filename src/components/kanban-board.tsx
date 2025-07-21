@@ -48,7 +48,7 @@ export default function KanbanBoard() {
         title: data.title,
         description: data.description,
         priority: data.priority,
-        assignees: data.assignees,
+        assignees: data.assignees || [], // Provide empty array as default
         status: "todo",
         dueDate: data.dueDate,
         startDate: new Date().toISOString().split("T")[0], // Set start date to today
