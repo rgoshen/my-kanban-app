@@ -5,16 +5,16 @@ export interface AvatarData {
 }
 
 export class AvatarService {
-  private static readonly AVATAR_API_BASE = "https://api.dicebear.com/7.x/initials/svg";
+  private static readonly AVATAR_API_BASE = "https://api.dicebear.com/7.x/personas/svg";
   private static readonly FALLBACK_COLORS = [
-    "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
-    "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400",
-    "bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400",
-    "bg-pink-100 text-pink-800 dark:bg-pink-900/20 dark:text-pink-400",
-    "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400",
-    "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400",
-    "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400",
-    "bg-teal-100 text-teal-800 dark:bg-teal-900/20 dark:text-teal-400",
+    "!bg-blue-100 !text-blue-800 dark:!bg-blue-900/20 dark:!text-blue-400",
+    "!bg-green-100 !text-green-800 dark:!bg-green-900/20 dark:!text-green-400",
+    "!bg-purple-100 !text-purple-800 dark:!bg-purple-900/20 dark:!text-purple-400",
+    "!bg-pink-100 !text-pink-800 dark:!bg-pink-900/20 dark:!text-pink-400",
+    "!bg-indigo-100 !text-indigo-800 dark:!bg-indigo-900/20 dark:!text-indigo-400",
+    "!bg-yellow-100 !text-yellow-800 dark:!bg-yellow-900/20 dark:!text-yellow-400",
+    "!bg-red-100 !text-red-800 dark:!bg-red-900/20 dark:!text-red-400",
+    "!bg-teal-100 !text-teal-800 dark:!bg-teal-900/20 dark:!text-teal-400",
   ];
 
   /**

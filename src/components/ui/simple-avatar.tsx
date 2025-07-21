@@ -82,28 +82,34 @@ export function SimpleAvatar({ assigneeName, size = "md", className }: SimpleAva
   }
 
   return (
-    <Avatar className={cn(sizeClasses[size], className)}>
-      {avatarData?.imageUrl && !isLoading && (
-        <AvatarImage
+    <div className={cn("relative", sizeClasses[size], className)}>
+      {avatarData?.imageUrl && !isLoading ? (
+        <img
           src={avatarData.imageUrl}
           alt={`Avatar for ${assigneeName}`}
+          className="w-full h-full rounded-full object-cover"
+          onLoad={() => {
+            console.log(`✅ Avatar image loaded successfully for ${assigneeName}`);
+          }}
           onError={(e) => {
-            console.warn(`Failed to load avatar image for ${assigneeName}:`, e);
+            console.warn(`❌ Failed to load avatar image for ${assigneeName}:`, e);
           }}
         />
+      ) : (
+        <div
+          className={cn(
+            "w-full h-full rounded-full flex items-center justify-center",
+            avatarData?.color || "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
+            fallbackSizeClasses[size],
+          )}
+        >
+          {isLoading ? (
+            <div className="animate-pulse bg-current opacity-50 rounded-full w-3 h-3" />
+          ) : (
+            avatarData?.initials || "?"
+          )}
+        </div>
       )}
-      <AvatarFallback
-        className={cn(
-          avatarData?.color || "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
-          fallbackSizeClasses[size],
-        )}
-      >
-        {isLoading ? (
-          <div className="animate-pulse bg-current opacity-50 rounded-full w-3 h-3" />
-        ) : (
-          avatarData?.initials || "?"
-        )}
-      </AvatarFallback>
-    </Avatar>
+    </div>
   );
 }
