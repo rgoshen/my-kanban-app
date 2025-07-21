@@ -29,6 +29,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useState } from "react";
+import { parseAssignees, validateAssigneeNames } from "@/lib/utils";
 
 const taskFormSchema = z.object({
   title: z
@@ -44,19 +45,10 @@ const taskFormSchema = z.object({
     .max(200, "Assignee names must be less than 200 characters")
     .trim()
     .refine((value) => {
-      const names = value
-        .split(",")
-        .map((name) => name.trim())
-        .filter((name) => name.length > 0);
-      return names.length > 0;
-    }, "At least one assignee is required")
-    .refine((value) => {
-      const names = value
-        .split(",")
-        .map((name) => name.trim())
-        .filter((name) => name.length > 0);
-      return names.every((name) => /^[a-zA-Z\s]+$/.test(name));
-    }, "Assignee names can only contain letters and spaces"),
+      const names = parseAssignees(value);
+      const validation = validateAssigneeNames(names);
+      return validation.isValid;
+    }, "Invalid assignee names"),
   dueDate: z
     .string()
     .optional()
@@ -71,7 +63,11 @@ const taskFormSchema = z.object({
 
 export type TaskFormData = z.infer<typeof taskFormSchema>;
 
-export function TaskFormDialog({ onSubmit }: { onSubmit: (data: TaskFormData) => void }) {
+interface TaskFormSubmitData extends Omit<TaskFormData, "assignees"> {
+  assignees: string[];
+}
+
+export function TaskFormDialog({ onSubmit }: { onSubmit: (data: TaskFormSubmitData) => void }) {
   const [open, setOpen] = useState(false);
   const form = useForm<TaskFormData>({
     resolver: zodResolver(taskFormSchema),
@@ -87,14 +83,11 @@ export function TaskFormDialog({ onSubmit }: { onSubmit: (data: TaskFormData) =>
 
   const handleSubmit = (data: TaskFormData) => {
     // Convert comma-separated assignees string to array
-    const assigneesArray = data.assignees
-      .split(",")
-      .map((name) => name.trim())
-      .filter((name) => name.length > 0);
+    const assigneesArray = parseAssignees(data.assignees);
 
     onSubmit({
       ...data,
-      assignees: assigneesArray.join(", "), // Keep as string for form compatibility
+      assignees: assigneesArray, // Pass as array for type compatibility
     });
     setOpen(false);
     form.reset();

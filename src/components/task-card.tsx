@@ -13,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
 import { Task } from "@/types/task";
+import { parseAssignees, formatAssignees, validateAssigneeNames } from "@/lib/utils";
 
 interface TaskCardProps {
   task: Task;
@@ -21,7 +22,8 @@ interface TaskCardProps {
 
 export function TaskCard({ task, onUpdateTask }: TaskCardProps) {
   const [isEditingAssignees, setIsEditingAssignees] = useState(false);
-  const [assigneesInput, setAssigneesInput] = useState(task.assignees.join(", "));
+  const [assigneesInput, setAssigneesInput] = useState(formatAssignees(task.assignees));
+  const [validationError, setValidationError] = useState<string | null>(null);
   const isClient = useIsClient();
 
   const {
@@ -65,19 +67,25 @@ export function TaskCard({ task, onUpdateTask }: TaskCardProps) {
   };
 
   const handleAssigneesSave = () => {
+    const assignees = parseAssignees(assigneesInput);
+    const validation = validateAssigneeNames(assignees);
+
+    if (!validation.isValid) {
+      setValidationError(validation.error || "Invalid assignee names");
+      return;
+    }
+
     if (onUpdateTask) {
-      const assignees = assigneesInput
-        .split(",")
-        .map((name) => name.trim())
-        .filter((name) => name.length > 0);
       onUpdateTask(task.id, { assignees });
     }
     setIsEditingAssignees(false);
+    setValidationError(null);
   };
 
   const handleAssigneesCancel = () => {
-    setAssigneesInput(task.assignees.join(", "));
+    setAssigneesInput(formatAssignees(task.assignees));
     setIsEditingAssignees(false);
+    setValidationError(null);
   };
 
   const isOverdue = task.dueDate && new Date(task.dueDate) < new Date();
@@ -127,33 +135,41 @@ export function TaskCard({ task, onUpdateTask }: TaskCardProps) {
         <div className="flex items-start gap-2">
           <Users className="h-3 w-3 text-gray-500 mt-1 flex-shrink-0" />
           {isEditingAssignees ? (
-            <div className="flex items-center gap-1 flex-1">
-              <Input
-                value={assigneesInput}
-                onChange={(e) => setAssigneesInput(e.target.value)}
-                className="h-6 text-xs"
-                placeholder="Enter assignee names (comma separated)"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") handleAssigneesSave();
-                  if (e.key === "Escape") handleAssigneesCancel();
-                }}
-              />
-              <Button
-                size="sm"
-                variant="ghost"
-                className="h-6 w-6 p-0"
-                onClick={handleAssigneesSave}
-              >
-                <Check className="h-3 w-3" />
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="h-6 w-6 p-0"
-                onClick={handleAssigneesCancel}
-              >
-                <X className="h-3 w-3" />
-              </Button>
+            <div className="flex flex-col gap-1 flex-1">
+              <div className="flex items-center gap-1">
+                <Input
+                  value={assigneesInput}
+                  onChange={(e) => {
+                    setAssigneesInput(e.target.value);
+                    setValidationError(null); // Clear error when user types
+                  }}
+                  className="h-6 text-xs"
+                  placeholder="Enter assignee names (comma separated)"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleAssigneesSave();
+                    if (e.key === "Escape") handleAssigneesCancel();
+                  }}
+                />
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-6 w-6 p-0"
+                  onClick={handleAssigneesSave}
+                >
+                  <Check className="h-3 w-3" />
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-6 w-6 p-0"
+                  onClick={handleAssigneesCancel}
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              </div>
+              {validationError && (
+                <p className="text-xs text-red-600 dark:text-red-400">{validationError}</p>
+              )}
             </div>
           ) : (
             <div className="flex items-start gap-2 flex-1">
