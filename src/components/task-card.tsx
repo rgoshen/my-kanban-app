@@ -6,7 +6,7 @@ import { Calendar, Clock, User, AlertTriangle, Edit2, Check, X } from "lucide-re
 import { useState } from "react";
 import { useIsClient } from "@/hooks/use-is-client";
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { SimpleAvatar } from "@/components/ui/simple-avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -62,15 +62,6 @@ export function TaskCard({ task, onUpdateTask }: TaskCardProps) {
       month: "short",
       day: "numeric",
     });
-  };
-
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
   };
 
   const handleAssigneeSave = () => {
@@ -164,11 +155,7 @@ export function TaskCard({ task, onUpdateTask }: TaskCardProps) {
             <div className="flex items-center gap-2 flex-1">
               {task.assignee ? (
                 <>
-                  <Avatar className="h-5 w-5">
-                    <AvatarFallback className="text-xs bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400">
-                      {getInitials(task.assignee)}
-                    </AvatarFallback>
-                  </Avatar>
+                  <SimpleAvatar assigneeName={task.assignee} size="md" className="h-8 w-8" />
                   <span className="text-xs text-gray-700 dark:text-gray-300 truncate">
                     {task.assignee}
                   </span>
