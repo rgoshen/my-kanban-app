@@ -2,6 +2,7 @@ import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import KanbanBoard from "../kanban-board";
 import { Task } from "@/types/task";
+import { sampleTasks } from "@/data/sample-tasks";
 
 // Mock the useIsClient hook
 jest.mock("@/hooks/use-is-client", () => ({
@@ -18,7 +19,7 @@ jest.mock("@dnd-kit/core", () => ({
       data-testid="dnd-context"
       onClick={(e) => {
         if (e.currentTarget.dataset.testid === "dnd-context") {
-          onDragStart?.({ active: { id: "task-1" } });
+          onDragStart?.({ active: { id: "1" } });
         }
       }}
     >
@@ -87,31 +88,7 @@ Object.defineProperty(global, "crypto", {
   },
 });
 
-// Mock the sample tasks
-jest.mock("@/data/sample-tasks", () => ({
-  sampleTasks: [
-    {
-      id: "task-1",
-      title: "Sample Task 1",
-      description: "First sample task",
-      status: "todo" as const,
-      priority: "high" as const,
-      assignees: ["John Doe"],
-      startDate: "2024-01-15",
-      dueDate: "2024-01-20",
-    },
-    {
-      id: "task-2",
-      title: "Sample Task 2",
-      description: "Second sample task",
-      status: "inprogress" as const,
-      priority: "medium" as const,
-      assignees: ["Jane Smith"],
-      startDate: "2024-01-16",
-      dueDate: "2024-01-25",
-    },
-  ],
-}));
+// Use real sample tasks instead of mocking
 
 describe("KanbanBoard", () => {
   beforeEach(() => {
@@ -143,10 +120,10 @@ describe("KanbanBoard", () => {
     render(<KanbanBoard />);
 
     expect(screen.getByTestId("kanban-columns")).toBeInTheDocument();
-    expect(screen.getByTestId("task-task-1")).toBeInTheDocument();
-    expect(screen.getByTestId("task-task-2")).toBeInTheDocument();
-    expect(screen.getByText("Sample Task 1")).toBeInTheDocument();
-    expect(screen.getByText("Sample Task 2")).toBeInTheDocument();
+    expect(screen.getByTestId("task-1")).toBeInTheDocument();
+    expect(screen.getByTestId("task-2")).toBeInTheDocument();
+    expect(screen.getByText("Learn React")).toBeInTheDocument();
+    expect(screen.getByText("Build Kanban Board")).toBeInTheDocument();
   });
 
   it("adds new task when form is submitted", async () => {
@@ -164,7 +141,7 @@ describe("KanbanBoard", () => {
   it("updates task when onUpdateTask is called", () => {
     render(<KanbanBoard />);
 
-    const updateButton = screen.getByTestId("update-task-task-1");
+    const updateButton = screen.getByTestId("update-task-1");
     fireEvent.click(updateButton);
 
     expect(screen.getByText("Updated Task")).toBeInTheDocument();
@@ -202,7 +179,7 @@ describe("KanbanBoard", () => {
 
     const dndContext = screen.getByTestId("dnd-context");
     const dragEndEvent = {
-      active: { id: "task-1" },
+      active: { id: "1" },
       over: null,
     };
 
@@ -216,7 +193,7 @@ describe("KanbanBoard", () => {
 
     const dndContext = screen.getByTestId("dnd-context");
     const dragEndEvent = {
-      active: { id: "task-1" },
+      active: { id: "1" },
       over: { id: "invalid-status" },
     };
 
@@ -277,14 +254,14 @@ describe("KanbanBoard", () => {
   it("handles multiple task updates", () => {
     render(<KanbanBoard />);
 
-    const updateButton1 = screen.getByTestId("update-task-task-1");
-    const updateButton2 = screen.getByTestId("update-task-task-2");
+    const updateButton1 = screen.getByTestId("update-task-1");
+    const updateButton2 = screen.getByTestId("update-task-2");
 
     fireEvent.click(updateButton1);
     fireEvent.click(updateButton2);
 
     // Check that both tasks in the columns are updated (excluding drag overlay)
-    const updatedTasks = screen.getAllByTestId(/^task-task-/);
+    const updatedTasks = screen.getAllByTestId(/^task-[1-2]$/);
     expect(updatedTasks).toHaveLength(2);
     updatedTasks.forEach((task) => {
       expect(task).toHaveTextContent("Updated Task");

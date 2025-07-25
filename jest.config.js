@@ -22,6 +22,7 @@ const customJestConfig = {
     '!src/app/layout.tsx',
     '!src/app/page.tsx',
     '!src/app/globals.css',
+    '!src/data/**/*',
   ],
   coverageThreshold: {
     global: {
