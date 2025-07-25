@@ -4,6 +4,7 @@ import { useDroppable } from "@dnd-kit/core";
 import { Task } from "@/types/task";
 import { TaskCard } from "./task-card";
 import { useIsClient } from "@/hooks/use-is-client";
+import { memo } from "react";
 
 interface DroppableColumnProps {
   id: string;
@@ -13,7 +14,7 @@ interface DroppableColumnProps {
   onUpdateTask?: (taskId: string, updates: Partial<Task>) => void;
 }
 
-export function DroppableColumn({
+export const DroppableColumn = memo(function DroppableColumn({
   id,
   title,
   tasks,
@@ -60,4 +61,4 @@ export function DroppableColumn({
       </div>
     </div>
   );
-}
+});

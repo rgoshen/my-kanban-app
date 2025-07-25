@@ -5,7 +5,7 @@ export interface AvatarData {
 }
 
 export class AvatarService {
-  private static readonly AVATAR_API_BASE = "https://api.dicebear.com/7.x/personas/svg";
+  private static readonly AVATAR_API_BASE = "https://api.dicebear.com/7.x/personas/png";
   private static readonly FALLBACK_COLORS = [
     "!bg-blue-100 !text-blue-800 dark:!bg-blue-900/20 dark:!text-blue-400",
     "!bg-green-100 !text-green-800 dark:!bg-green-900/20 dark:!text-green-400",

@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Plus, Kanban } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import Image from "next/image";
 import { TaskFormDialog, TaskFormData } from "./task-form-dialog";
 import { KanbanColumns } from "./kanban-columns";
 import { TaskCard } from "./task-card";
@@ -86,7 +87,13 @@ export default function KanbanBoard() {
       <div className="mx-auto max-w-7xl">
         <div className="mb-8 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src="/byte-bridge-logo.svg" alt="Kanban Board" className="h-8 w-8" />
+            <Image
+              src="/byte-bridge-logo.svg"
+              alt="Kanban Board"
+              width={32}
+              height={32}
+              className="h-8 w-8"
+            />
             <h1 className="text-3xl font-bold text-foreground">My Kanban Board</h1>
           </div>
           <ThemeToggle />
