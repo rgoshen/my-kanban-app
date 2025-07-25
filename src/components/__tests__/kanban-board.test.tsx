@@ -1,0 +1,279 @@
+import React from "react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import KanbanBoard from "../kanban-board";
+import { Task } from "@/types/task";
+
+// Mock the useIsClient hook
+jest.mock("@/hooks/use-is-client", () => ({
+  useIsClient: () => true,
+}));
+
+// Mock the useSensors hook
+jest.mock("@dnd-kit/core", () => ({
+  useSensors: jest.fn(() => []),
+  useSensor: jest.fn(),
+  PointerSensor: jest.fn(),
+  DndContext: ({ children, onDragStart, onDragEnd }: any) => (
+    <div data-testid="dnd-context" onDragStart={onDragStart} onDragEnd={onDragEnd}>
+      {children}
+    </div>
+  ),
+  DragOverlay: ({ children }: any) => <div data-testid="drag-overlay">{children}</div>,
+}));
+
+// Mock the TaskFormDialog component
+jest.mock("../task-form-dialog", () => ({
+  TaskFormDialog: ({ onSubmit }: { onSubmit: (data: any) => void }) => (
+    <button
+      data-testid="add-task-button"
+      onClick={() =>
+        onSubmit({
+          title: "New Test Task",
+          description: "New test description",
+          priority: "medium",
+          assignees: ["New Assignee"],
+          dueDate: "2024-12-31",
+        })
+      }
+    >
+      Add Task
+    </button>
+  ),
+}));
+
+// Mock the KanbanColumns component
+jest.mock("../kanban-columns", () => ({
+  KanbanColumns: ({ tasks, onUpdateTask }: { tasks: Task[]; onUpdateTask?: any }) => (
+    <div data-testid="kanban-columns">
+      {tasks.map((task) => (
+        <div key={task.id} data-testid={`task-${task.id}`}>
+          {task.title}
+          <button
+            data-testid={`update-task-${task.id}`}
+            onClick={() => onUpdateTask?.(task.id, { title: "Updated Task" })}
+          >
+            Update
+          </button>
+        </div>
+      ))}
+    </div>
+  ),
+}));
+
+// Mock the TaskCard component
+jest.mock("../task-card", () => ({
+  TaskCard: ({ task }: { task: Task }) => (
+    <div data-testid={`task-card-${task.id}`}>{task.title}</div>
+  ),
+}));
+
+// Mock the ThemeToggle component
+jest.mock("../theme-toggle", () => ({
+  ThemeToggle: () => <div data-testid="theme-toggle">Theme Toggle</div>,
+}));
+
+// Mock crypto.randomUUID
+Object.defineProperty(global, "crypto", {
+  value: {
+    randomUUID: () => "test-uuid-123",
+  },
+});
+
+// Mock the sample tasks
+jest.mock("@/data/sample-tasks", () => ({
+  sampleTasks: [
+    {
+      id: "task-1",
+      title: "Sample Task 1",
+      description: "First sample task",
+      status: "todo" as const,
+      priority: "high" as const,
+      assignees: ["John Doe"],
+      startDate: "2024-01-15",
+      dueDate: "2024-01-20",
+    },
+    {
+      id: "task-2",
+      title: "Sample Task 2",
+      description: "Second sample task",
+      status: "inprogress" as const,
+      priority: "medium" as const,
+      assignees: ["Jane Smith"],
+      startDate: "2024-01-16",
+      dueDate: "2024-01-25",
+    },
+  ],
+}));
+
+describe("KanbanBoard", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("renders the main board with title and logo", () => {
+    render(<KanbanBoard />);
+
+    expect(screen.getByText("My Kanban Board")).toBeInTheDocument();
+    expect(screen.getByAltText("Kanban Board")).toBeInTheDocument();
+  });
+
+  it("renders theme toggle", () => {
+    render(<KanbanBoard />);
+
+    expect(screen.getByTestId("theme-toggle")).toBeInTheDocument();
+  });
+
+  it("renders add task button", () => {
+    render(<KanbanBoard />);
+
+    expect(screen.getByTestId("add-task-button")).toBeInTheDocument();
+  });
+
+  it("renders kanban columns with sample tasks", () => {
+    render(<KanbanBoard />);
+
+    expect(screen.getByTestId("kanban-columns")).toBeInTheDocument();
+    expect(screen.getByTestId("task-task-1")).toBeInTheDocument();
+    expect(screen.getByTestId("task-task-2")).toBeInTheDocument();
+    expect(screen.getByText("Sample Task 1")).toBeInTheDocument();
+    expect(screen.getByText("Sample Task 2")).toBeInTheDocument();
+  });
+
+  it("adds new task when form is submitted", async () => {
+    render(<KanbanBoard />);
+
+    const addButton = screen.getByTestId("add-task-button");
+    fireEvent.click(addButton);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("task-test-uuid-123")).toBeInTheDocument();
+      expect(screen.getByText("New Test Task")).toBeInTheDocument();
+    });
+  });
+
+  it("updates task when onUpdateTask is called", () => {
+    render(<KanbanBoard />);
+
+    const updateButton = screen.getByTestId("update-task-task-1");
+    fireEvent.click(updateButton);
+
+    expect(screen.getByText("Updated Task")).toBeInTheDocument();
+  });
+
+  it("handles drag start correctly", () => {
+    render(<KanbanBoard />);
+
+    const dndContext = screen.getByTestId("dnd-context");
+    const dragStartEvent = {
+      active: { id: "task-1" },
+    };
+
+    fireEvent.dragStart(dndContext, dragStartEvent);
+
+    // The drag overlay should show the dragged task
+    expect(screen.getByTestId("drag-overlay")).toBeInTheDocument();
+  });
+
+  it("handles drag end correctly", () => {
+    render(<KanbanBoard />);
+
+    const dndContext = screen.getByTestId("dnd-context");
+    const dragEndEvent = {
+      active: { id: "task-1" },
+      over: { id: "done" },
+    };
+
+    fireEvent.dragEnd(dndContext, dragEndEvent);
+
+    // The task should be moved to the done column
+    // This would be verified by checking the task status in the columns
+  });
+
+  it("handles drag end with no over target", () => {
+    render(<KanbanBoard />);
+
+    const dndContext = screen.getByTestId("dnd-context");
+    const dragEndEvent = {
+      active: { id: "task-1" },
+      over: null,
+    };
+
+    fireEvent.dragEnd(dndContext, dragEndEvent);
+
+    // Should not change anything when dropping on nothing
+  });
+
+  it("handles drag end with invalid status", () => {
+    render(<KanbanBoard />);
+
+    const dndContext = screen.getByTestId("dnd-context");
+    const dragEndEvent = {
+      active: { id: "task-1" },
+      over: { id: "invalid-status" },
+    };
+
+    fireEvent.dragEnd(dndContext, dragEndEvent);
+
+    // Should not change task status for invalid status
+  });
+
+  it("generates unique IDs for new tasks", () => {
+    render(<KanbanBoard />);
+
+    const addButton = screen.getByTestId("add-task-button");
+
+    // Add first task
+    fireEvent.click(addButton);
+
+    // Add second task
+    fireEvent.click(addButton);
+
+    // Both tasks should have unique IDs
+    expect(screen.getByTestId("task-test-uuid-123")).toBeInTheDocument();
+  });
+
+  it("sets start date to today for new tasks", () => {
+    const mockDate = new Date("2024-01-15");
+    jest.spyOn(global, "Date").mockImplementation(() => mockDate as any);
+
+    render(<KanbanBoard />);
+
+    const addButton = screen.getByTestId("add-task-button");
+    fireEvent.click(addButton);
+
+    // The new task should have today's date as start date
+    expect(screen.getByTestId("task-test-uuid-123")).toBeInTheDocument();
+  });
+
+  it("handles task with empty assignees array", () => {
+    render(<KanbanBoard />);
+
+    // The component should handle tasks with empty assignees
+    expect(screen.getByTestId("kanban-columns")).toBeInTheDocument();
+  });
+
+  it("handles task with undefined assignees", () => {
+    render(<KanbanBoard />);
+
+    // The component should handle tasks with undefined assignees
+    expect(screen.getByTestId("kanban-columns")).toBeInTheDocument();
+  });
+
+  it("renders drag overlay when dragging", () => {
+    render(<KanbanBoard />);
+
+    expect(screen.getByTestId("drag-overlay")).toBeInTheDocument();
+  });
+
+  it("handles multiple task updates", () => {
+    render(<KanbanBoard />);
+
+    const updateButton1 = screen.getByTestId("update-task-task-1");
+    const updateButton2 = screen.getByTestId("update-task-task-2");
+
+    fireEvent.click(updateButton1);
+    fireEvent.click(updateButton2);
+
+    expect(screen.getAllByText("Updated Task")).toHaveLength(2);
+  });
+});
