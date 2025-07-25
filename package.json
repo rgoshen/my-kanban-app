@@ -16,7 +16,7 @@
     "test:watch": "NODE_ENV=test npx jest --watch",
     "test:coverage": "NODE_ENV=test npx jest --coverage",
     "test:ci": "NODE_ENV=test npx jest --ci --coverage --watchAll=false",
-    "test:codecov": "./scripts/test-codecov.sh",
+    "test:codecov": "node scripts/test-codecov.js",
     "security:audit": "npm audit --audit-level=moderate",
     "security:outdated": "npm outdated",
     "security:check": "npm run security:audit && npm run security:outdated",
