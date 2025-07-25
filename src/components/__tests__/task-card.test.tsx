@@ -14,6 +14,15 @@ jest.mock("@dnd-kit/core", () => ({
   }),
 }));
 
+// Mock the SimpleAvatar component to prevent async operations in tests
+jest.mock("@/components/ui/simple-avatar", () => ({
+  SimpleAvatar: ({ assigneeName, size, className }: any) => (
+    <div data-testid={`simple-avatar-${assigneeName}`} className={className}>
+      {assigneeName ? assigneeName.charAt(0).toUpperCase() : "?"}
+    </div>
+  ),
+}));
+
 const mockTask: Task = {
   id: "task-1",
   title: "Test Task",
