@@ -12,10 +12,10 @@
     "format:check": "prettier --check .",
     "type-check": "tsc --noEmit",
     "code-quality": "npm run lint && npm run format:check && npm run type-check",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
-    "test:ci": "jest --ci --coverage --watchAll=false",
+    "test": "NODE_ENV=test npx jest",
+    "test:watch": "NODE_ENV=test npx jest --watch",
+    "test:coverage": "NODE_ENV=test npx jest --coverage",
+    "test:ci": "NODE_ENV=test npx jest --ci --coverage --watchAll=false",
     "security:audit": "npm audit --audit-level=moderate",
     "security:outdated": "npm outdated",
     "security:check": "npm run security:audit && npm run security:outdated",
@@ -82,6 +82,6 @@
     "prettier": "^3.6.2",
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.5",
-    "typescript": "^5"
+    "typescript": "5.8.3"
   }
 }
