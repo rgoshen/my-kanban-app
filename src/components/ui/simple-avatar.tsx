@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { AvatarService } from "@/lib/avatar-service";
 import { cn } from "@/lib/utils";
@@ -84,9 +85,11 @@ export function SimpleAvatar({ assigneeName, size = "md", className }: SimpleAva
   return (
     <div className={cn("relative", sizeClasses[size], className)}>
       {avatarData?.imageUrl && !isLoading ? (
-        <img
+        <Image
           src={avatarData.imageUrl}
           alt={`Avatar for ${assigneeName}`}
+          width={size === "sm" ? 20 : size === "md" ? 32 : 40}
+          height={size === "sm" ? 20 : size === "md" ? 32 : 40}
           className="w-full h-full rounded-full object-cover"
           onLoad={() => {
             console.log(`✅ Avatar image loaded successfully for ${assigneeName}`);
