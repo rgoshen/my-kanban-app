@@ -3,11 +3,6 @@ import { render, screen } from "@testing-library/react";
 import { KanbanColumns } from "../kanban-columns";
 import { Task } from "@/types/task";
 
-// Mock the useIsClient hook
-jest.mock("@/hooks/use-is-client", () => ({
-  useIsClient: () => true,
-}));
-
 // Mock the DroppableColumn component
 jest.mock("../droppable-column", () => ({
   DroppableColumn: ({ id, title, tasks, onUpdateTask }: any) => (

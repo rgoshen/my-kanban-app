@@ -4,7 +4,7 @@ import { useMemo, memo } from "react";
 
 interface KanbanColumnsProps {
   tasks: Task[];
-  onUpdateTask: (taskId: string, updates: Partial<Task>) => void;
+  onUpdateTask?: (taskId: string, updates: Partial<Task>) => void;
 }
 
 const KanbanColumns = memo(function KanbanColumns({ tasks, onUpdateTask }: KanbanColumnsProps) {
