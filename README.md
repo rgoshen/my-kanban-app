@@ -107,3 +107,72 @@ Theme colors and variables are defined in `src/app/globals.css`. You can customi
 ### Component Styling
 
 All components can be customized using Tailwind CSS classes and CSS variables. Each component is built with accessibility in mind and follows modern design patterns.
+
+## Development Workflow
+
+### Code Quality
+
+The project includes comprehensive code quality checks:
+
+```bash
+# Run all code quality checks
+npm run code-quality
+
+# Individual checks
+npm run lint          # ESLint
+npm run format:check  # Prettier
+npm run type-check    # TypeScript
+```
+
+### Testing
+
+```bash
+# Run tests
+npm run test
+
+# Run tests with coverage
+npm run test:coverage
+
+# Run tests in watch mode
+npm run test:watch
+```
+
+**Coverage Requirements:**
+
+- Statements: 90%
+- Lines: 90%
+- Branches: 80%
+- Functions: 85%
+
+### CI/CD Pipeline
+
+The project uses GitHub Actions for automated testing and quality checks:
+
+#### Workflows
+
+1. **CI** (`.github/workflows/ci.yml`)
+   - Runs on: pushes to main/develop, pull requests
+   - Checks: TypeScript, ESLint, Prettier, Tests, Coverage
+
+2. **Tests** (`.github/workflows/test.yml`)
+   - Runs on: pushes to main/develop, pull requests
+   - Matrix testing with Node.js 18 and 20
+   - Includes coverage reporting and PR comments
+
+3. **Security** (`.github/workflows/security.yml`)
+   - Runs on: pushes to main, pull requests, weekly schedule
+   - Checks: npm audit, outdated packages, CodeQL analysis
+
+#### Branch Protection
+
+- All changes must go through pull requests
+- Tests must pass before merging
+- Code quality checks are enforced
+- Coverage requirements must be met
+
+### Git Hooks
+
+The project uses Husky for pre-commit and pre-push hooks:
+
+- **Pre-commit**: Runs linting and formatting
+- **Pre-push**: Runs full code quality checks and tests
