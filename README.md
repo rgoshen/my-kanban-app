@@ -46,19 +46,32 @@ Use the theme toggle button in the top-right corner to switch between themes.
 
 ## Getting Started
 
-1. Install dependencies:
+### Prerequisites
+
+- **Node.js**: Version 22.0.0 or higher (see `.nvmrc` for exact version)
+- **npm**: Version 10.0.0 or higher
+
+### Installation
+
+1. **Use the correct Node.js version** (recommended):
+
+   ```bash
+   nvm use
+   ```
+
+2. Install dependencies:
 
    ```bash
    npm install
    ```
 
-2. Run the development server:
+3. Run the development server:
 
    ```bash
    npm run dev
    ```
 
-3. Open [http://localhost:3000](http://localhost:3000) in your browser
+4. Open [http://localhost:3000](http://localhost:3000) in your browser
 
 ## Project Structure
 
@@ -78,6 +91,7 @@ src/
 
 ## Technologies Used
 
+- **Node.js 22**: JavaScript runtime
 - **Next.js 15**: React framework with App Router
 - **Shadcn/ui**: Component library built on Radix UI
 - **Tailwind CSS v4**: Utility-first CSS framework
