@@ -86,6 +86,8 @@ Object.defineProperty(global, "crypto", {
   value: {
     randomUUID: () => `test-uuid-${++uuidCounter}`,
   },
+  writable: true,
+  configurable: true,
 });
 
 // Use real sample tasks instead of mocking
@@ -95,6 +97,14 @@ describe("KanbanBoard", () => {
     jest.clearAllMocks();
     // Reset UUID counter for each test
     uuidCounter = 0;
+    // Re-define the crypto mock to ensure it's fresh
+    Object.defineProperty(global, "crypto", {
+      value: {
+        randomUUID: () => `test-uuid-${++uuidCounter}`,
+      },
+      writable: true,
+      configurable: true,
+    });
   });
 
   it("renders the main board with title and logo", () => {
