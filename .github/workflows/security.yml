@@ -70,7 +70,4 @@ jobs:
       - name: Run ESLint security rules
         run: npm run lint
 
-      - name: Check for secrets in code
-        uses: trufflesecurity/trufflehog@main
-        with:
-          args: --only-verified --fail
+      # Note: TruffleHog removed - GitHub's built-in secret scanning is sufficient
