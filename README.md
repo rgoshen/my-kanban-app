@@ -46,6 +46,13 @@ Use the theme toggle button in the top-right corner to switch between themes.
 
 ## Getting Started
 
+### Prerequisites
+
+- **Node.js**: Version 22.0.0 or higher
+- **npm**: Version 10.0.0 or higher
+
+### Installation
+
 1. Install dependencies:
 
    ```bash
@@ -78,6 +85,7 @@ src/
 
 ## Technologies Used
 
+- **Node.js 22**: JavaScript runtime
 - **Next.js 15**: React framework with App Router
 - **Shadcn/ui**: Component library built on Radix UI
 - **Tailwind CSS v4**: Utility-first CSS framework
