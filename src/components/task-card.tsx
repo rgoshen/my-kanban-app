@@ -1,10 +1,9 @@
 "use client";
 
+import React, { useState, useMemo } from "react";
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { Calendar, Clock, Users, AlertTriangle, Edit2, Check, X, Plus } from "lucide-react";
-import { useState } from "react";
-import { useIsClient } from "@/hooks/use-is-client";
 
 import { SimpleAvatar } from "@/components/ui/simple-avatar";
 import { Badge } from "@/components/ui/badge";
@@ -19,13 +18,14 @@ import {
   validateAssigneeNames,
   MAX_DISPLAYED_ASSIGNEES,
 } from "@/lib/utils";
+import { useIsClient } from "@/hooks/use-is-client";
 
 interface TaskCardProps {
   task: Task;
   onUpdateTask?: (taskId: string, updates: Partial<Task>) => void;
 }
 
-export function TaskCard({ task, onUpdateTask }: TaskCardProps) {
+export const TaskCard = React.memo(function TaskCard({ task, onUpdateTask }: TaskCardProps) {
   const [isEditingAssignees, setIsEditingAssignees] = useState(false);
   const [assigneesInput, setAssigneesInput] = useState(formatAssignees(task.assignees || []));
   const [validationError, setValidationError] = useState<string | null>(null);
@@ -70,6 +70,10 @@ export function TaskCard({ task, onUpdateTask }: TaskCardProps) {
       day: "numeric",
     });
   };
+
+  // Memoize formatted dates
+  const formattedStartDate = useMemo(() => formatDate(task.startDate), [task.startDate]);
+  const formattedDueDate = useMemo(() => formatDate(task.dueDate), [task.dueDate]);
 
   const handleAssigneesSave = () => {
     const assignees = parseAssignees(assigneesInput);
@@ -213,7 +217,7 @@ export function TaskCard({ task, onUpdateTask }: TaskCardProps) {
           <div className="flex items-center gap-1">
             <Clock className="h-3 w-3" />
             {task.startDate ? (
-              <span>Started {formatDate(task.startDate)}</span>
+              <span>Started {formattedStartDate}</span>
             ) : (
               <span className="italic">No start date</span>
             )}
@@ -222,7 +226,7 @@ export function TaskCard({ task, onUpdateTask }: TaskCardProps) {
             <Calendar className="h-3 w-3" />
             {task.dueDate ? (
               <span className={isOverdue ? "text-red-600 dark:text-red-400 font-medium" : ""}>
-                Due {formatDate(task.dueDate)}
+                Due {formattedDueDate}
                 {isOverdue && <AlertTriangle className="h-3 w-3 ml-1 inline" />}
               </span>
             ) : (
@@ -233,4 +237,4 @@ export function TaskCard({ task, onUpdateTask }: TaskCardProps) {
       </CardContent>
     </Card>
   );
-}
+});
