@@ -1,4 +1,4 @@
-name: Tests
+name: CI/CD Pipeline
 
 on:
   push:
@@ -12,21 +12,16 @@ permissions:
   issues: write
 
 jobs:
-  test:
+  quality-checks:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [22]
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js ${{ matrix.node-version }}
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: "22"
           cache: "npm"
 
       - name: Install dependencies
@@ -54,9 +49,9 @@ jobs:
           fail_ci_if_error: false
           verbose: true
 
-  test-coverage:
+  pr-coverage-report:
     runs-on: ubuntu-latest
-    needs: test
+    needs: quality-checks
     if: github.event_name == 'pull_request'
     permissions:
       contents: read
