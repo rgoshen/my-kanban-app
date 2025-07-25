@@ -14,7 +14,14 @@ jest.mock("@dnd-kit/core", () => ({
   useSensor: jest.fn(),
   PointerSensor: jest.fn(),
   DndContext: ({ children, onDragStart, onDragEnd }: any) => (
-    <div data-testid="dnd-context" onDragStart={onDragStart} onDragEnd={onDragEnd}>
+    <div
+      data-testid="dnd-context"
+      onClick={(e) => {
+        if (e.currentTarget.dataset.testid === "dnd-context") {
+          onDragStart?.({ active: { id: "task-1" } });
+        }
+      }}
+    >
       {children}
     </div>
   ),
@@ -72,10 +79,11 @@ jest.mock("../theme-toggle", () => ({
   ThemeToggle: () => <div data-testid="theme-toggle">Theme Toggle</div>,
 }));
 
-// Mock crypto.randomUUID
+// Mock crypto.randomUUID with unique IDs
+let uuidCounter = 0;
 Object.defineProperty(global, "crypto", {
   value: {
-    randomUUID: () => "test-uuid-123",
+    randomUUID: () => `test-uuid-${++uuidCounter}`,
   },
 });
 
@@ -108,6 +116,8 @@ jest.mock("@/data/sample-tasks", () => ({
 describe("KanbanBoard", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    // Reset UUID counter for each test
+    uuidCounter = 0;
   });
 
   it("renders the main board with title and logo", () => {
@@ -146,7 +156,7 @@ describe("KanbanBoard", () => {
     fireEvent.click(addButton);
 
     await waitFor(() => {
-      expect(screen.getByTestId("task-test-uuid-123")).toBeInTheDocument();
+      expect(screen.getByTestId("task-test-uuid-1")).toBeInTheDocument();
       expect(screen.getByText("New Test Task")).toBeInTheDocument();
     });
   });
@@ -164,11 +174,9 @@ describe("KanbanBoard", () => {
     render(<KanbanBoard />);
 
     const dndContext = screen.getByTestId("dnd-context");
-    const dragStartEvent = {
-      active: { id: "task-1" },
-    };
 
-    fireEvent.dragStart(dndContext, dragStartEvent);
+    // Simulate the drag start event by clicking the context
+    fireEvent.click(dndContext);
 
     // The drag overlay should show the dragged task
     expect(screen.getByTestId("drag-overlay")).toBeInTheDocument();
@@ -229,7 +237,8 @@ describe("KanbanBoard", () => {
     fireEvent.click(addButton);
 
     // Both tasks should have unique IDs
-    expect(screen.getByTestId("task-test-uuid-123")).toBeInTheDocument();
+    expect(screen.getByTestId("task-test-uuid-1")).toBeInTheDocument();
+    expect(screen.getByTestId("task-test-uuid-2")).toBeInTheDocument();
   });
 
   it("sets start date to today for new tasks", () => {
@@ -242,7 +251,7 @@ describe("KanbanBoard", () => {
     fireEvent.click(addButton);
 
     // The new task should have today's date as start date
-    expect(screen.getByTestId("task-test-uuid-123")).toBeInTheDocument();
+    expect(screen.getByTestId("task-test-uuid-1")).toBeInTheDocument();
   });
 
   it("handles task with empty assignees array", () => {
@@ -274,6 +283,11 @@ describe("KanbanBoard", () => {
     fireEvent.click(updateButton1);
     fireEvent.click(updateButton2);
 
-    expect(screen.getAllByText("Updated Task")).toHaveLength(2);
+    // Check that both tasks in the columns are updated (excluding drag overlay)
+    const updatedTasks = screen.getAllByTestId(/^task-task-/);
+    expect(updatedTasks).toHaveLength(2);
+    updatedTasks.forEach((task) => {
+      expect(task).toHaveTextContent("Updated Task");
+    });
   });
 });

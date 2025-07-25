@@ -156,7 +156,8 @@ describe("DroppableColumn", () => {
       />,
     );
 
-    const column = screen.getByText("To Do").closest("div");
+    // The className is applied to the main container div, not the title's parent
+    const column = screen.getByText("To Do").closest("div")?.parentElement;
     expect(column).toHaveClass("custom-class");
   });
 

@@ -3,6 +3,29 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { TaskFormDialog } from "../task-form-dialog";
 
+// Mock the Select component to avoid pointer event issues
+jest.mock("@/components/ui/select", () => ({
+  Select: ({ children, value, onValueChange, defaultValue }: any) => (
+    <div data-testid="select-mock">
+      <select
+        value={value || defaultValue}
+        onChange={(e) => onValueChange?.(e.target.value)}
+        data-testid="priority-select"
+        aria-label="Priority *"
+      >
+        <option value="">Select priority</option>
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+      </select>
+    </div>
+  ),
+  SelectContent: ({ children }: any) => <div>{children}</div>,
+  SelectItem: ({ value, children }: any) => <option value={value}>{children}</option>,
+  SelectTrigger: ({ children }: any) => <div>{children}</div>,
+  SelectValue: ({ placeholder }: any) => <span>{placeholder}</span>,
+}));
+
 const mockOnSubmit = jest.fn();
 
 describe("TaskFormDialog", () => {
@@ -45,7 +68,7 @@ describe("TaskFormDialog", () => {
 
     expect(screen.getByLabelText("Title *")).toBeInTheDocument();
     expect(screen.getByLabelText("Description")).toBeInTheDocument();
-    expect(screen.getByLabelText("Priority *")).toBeInTheDocument();
+    expect(screen.getByTestId("priority-select")).toBeInTheDocument();
     expect(screen.getByLabelText("Assignees *")).toBeInTheDocument();
     expect(screen.getByLabelText("Due Date")).toBeInTheDocument();
   });
@@ -61,7 +84,20 @@ describe("TaskFormDialog", () => {
     await user.type(screen.getByLabelText("Title *"), "Test Task");
     await user.type(screen.getByLabelText("Description"), "Test Description");
     await user.type(screen.getByLabelText("Assignees *"), "John Doe, Jane Smith");
-    await user.type(screen.getByLabelText("Due Date"), "2024-12-31");
+    await user.type(screen.getByLabelText("Due Date"), "2025-12-31");
+
+    // Set priority to medium (default value)
+    const prioritySelect = screen.getByTestId("priority-select");
+    await user.selectOptions(prioritySelect, "medium");
+
+    // Check for any validation errors
+    const validationErrors = screen.queryAllByText(/is required|Invalid|cannot be in the past/);
+    if (validationErrors.length > 0) {
+      console.log(
+        "Validation errors found:",
+        validationErrors.map((el) => el.textContent),
+      );
+    }
 
     // Submit form
     const submitButton = screen.getByRole("button", { name: "Create Task" });
@@ -73,7 +109,7 @@ describe("TaskFormDialog", () => {
         description: "Test Description",
         priority: "medium",
         assignees: ["John Doe", "Jane Smith"],
-        dueDate: "2024-12-31",
+        dueDate: "2025-12-31",
       });
     });
   });
@@ -204,13 +240,9 @@ describe("TaskFormDialog", () => {
     const button = screen.getByRole("button");
     await user.click(button);
 
-    // Open priority dropdown
-    const prioritySelect = screen.getByLabelText("Priority *");
-    await user.click(prioritySelect);
-
-    // Select high priority
-    const highOption = screen.getByText("High");
-    await user.click(highOption);
+    // Change priority using the mocked select
+    const prioritySelect = screen.getByTestId("priority-select");
+    await user.selectOptions(prioritySelect, "high");
 
     // Fill in other required fields
     await user.type(screen.getByLabelText("Title *"), "Test Task");

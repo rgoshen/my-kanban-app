@@ -33,13 +33,13 @@ describe("ThemeToggle", () => {
   it("renders sun and moon icons", () => {
     render(<ThemeToggle />);
 
-    // Check for sun icon (should be visible in light mode)
-    const sunIcon = screen.getByRole("img", { hidden: true });
+    // Check for sun and moon icons using SVG selectors
+    const sunIcon = document.querySelector('svg[class*="h-[1.2rem] w-[1.2rem]"]');
     expect(sunIcon).toBeInTheDocument();
 
-    // Check for moon icon (should be present but hidden in light mode)
-    const moonIcon = screen.getAllByRole("img", { hidden: true })[1];
-    expect(moonIcon).toBeInTheDocument();
+    // Should have two SVG icons (sun and moon)
+    const allIcons = document.querySelectorAll('svg[class*="h-[1.2rem] w-[1.2rem]"]');
+    expect(allIcons).toHaveLength(2);
   });
 
   it("opens dropdown menu when clicked", () => {
@@ -48,8 +48,7 @@ describe("ThemeToggle", () => {
     const button = screen.getByRole("button");
     fireEvent.click(button);
 
-    // Check for dropdown menu items - these might not be visible immediately
-    // The dropdown might be controlled by the theme system
+    // Check for dropdown menu items
     expect(button).toBeInTheDocument();
   });
 
@@ -73,21 +72,22 @@ describe("ThemeToggle", () => {
   it("has correct icon sizing", () => {
     render(<ThemeToggle />);
 
-    const icons = screen.getAllByRole("img", { hidden: true });
+    const icons = document.querySelectorAll('svg[class*="h-[1.2rem] w-[1.2rem]"]');
     expect(icons).toHaveLength(2);
   });
 
   it("has correct icon positioning", () => {
     render(<ThemeToggle />);
 
-    const icons = screen.getAllByRole("img", { hidden: true });
+    const icons = document.querySelectorAll('svg[class*="h-[1.2rem] w-[1.2rem]"]');
+    // The second icon (moon) should have absolute positioning
     expect(icons[1]).toHaveClass("absolute");
   });
 
   it("has correct transition classes", () => {
     render(<ThemeToggle />);
 
-    const icons = screen.getAllByRole("img", { hidden: true });
+    const icons = document.querySelectorAll('svg[class*="h-[1.2rem] w-[1.2rem]"]');
     expect(icons[0]).toHaveClass("transition-all");
     expect(icons[1]).toHaveClass("transition-all");
   });

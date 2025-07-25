@@ -4,8 +4,13 @@ import { ThemeProvider } from "../theme-provider";
 
 // Mock next-themes
 jest.mock("next-themes", () => ({
-  ThemeProvider: ({ children, ...props }: any) => (
-    <div data-testid="next-themes-provider" {...props}>
+  ThemeProvider: ({ children, attribute, defaultTheme, enableSystem }: any) => (
+    <div
+      data-testid="next-themes-provider"
+      data-attribute={attribute}
+      data-default-theme={defaultTheme}
+      data-enable-system={enableSystem}
+    >
       {children}
     </div>
   ),
@@ -36,9 +41,9 @@ describe("ThemeProvider", () => {
     );
 
     const provider = getByTestId("next-themes-provider");
-    expect(provider).toHaveAttribute("attribute", "data-theme");
-    expect(provider).toHaveAttribute("defaultTheme", "system");
-    expect(provider).toHaveAttribute("enableSystem", "true");
+    expect(provider).toHaveAttribute("data-attribute", "data-theme");
+    expect(provider).toHaveAttribute("data-default-theme", "system");
+    expect(provider).toHaveAttribute("data-enable-system", "true");
   });
 
   it("renders multiple children", () => {

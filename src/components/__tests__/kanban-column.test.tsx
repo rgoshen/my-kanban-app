@@ -139,14 +139,31 @@ describe("KanbanColumn", () => {
     expect(screen.getByTestId("task-card-task-2")).toBeInTheDocument();
   });
 
-  it("renders with different title variations", () => {
-    const titles = ["To Do", "In Progress", "Done", "Custom Column", ""];
+  it("renders with 'To Do' title", () => {
+    render(<KanbanColumn title="To Do" tasks={mockTasks} />);
+    expect(screen.getByText("To Do")).toBeInTheDocument();
+  });
 
-    titles.forEach((title) => {
-      const { unmount } = render(<KanbanColumn title={title} tasks={mockTasks} />);
-      expect(screen.getByText(title)).toBeInTheDocument();
-      unmount();
-    });
+  it("renders with 'In Progress' title", () => {
+    render(<KanbanColumn title="In Progress" tasks={mockTasks} />);
+    expect(screen.getByText("In Progress")).toBeInTheDocument();
+  });
+
+  it("renders with 'Done' title", () => {
+    render(<KanbanColumn title="Done" tasks={mockTasks} />);
+    expect(screen.getByText("Done")).toBeInTheDocument();
+  });
+
+  it("renders with 'Custom Column' title", () => {
+    render(<KanbanColumn title="Custom Column" tasks={mockTasks} />);
+    expect(screen.getByText("Custom Column")).toBeInTheDocument();
+  });
+
+  it("renders with empty title", () => {
+    render(<KanbanColumn title="" tasks={mockTasks} />);
+    const titleElement = screen.getByRole("heading", { level: 2 });
+    expect(titleElement).toBeInTheDocument();
+    expect(titleElement).toHaveTextContent("Untitled Column");
   });
 
   it("renders individual titles correctly", () => {
