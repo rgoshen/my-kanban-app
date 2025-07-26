@@ -77,9 +77,7 @@ if (fs.existsSync(envTestPath)) {
     .replace(
       "AVATAR_SERVICE_URL=https://your-avatar-service.com",
       "AVATAR_SERVICE_URL=https://api.example.com/avatars",
-    )
-    .replace("DEBUG=false", "DEBUG=false")
-    .replace("DB_LOGGING=false", "DB_LOGGING=false");
+    );
 
   fs.writeFileSync(envTestPath, envTestContent);
 
