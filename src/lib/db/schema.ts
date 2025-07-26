@@ -32,7 +32,7 @@ export const tasks = pgTable("tasks", {
   status: taskStatusEnum("status").notNull().default("todo"),
   columnId: uuid("column_id").references(() => columns.id, { onDelete: "cascade" }),
   orderIndex: integer("order_index").notNull().default(0),
-  assignees: text("assignees").array(), // Array of assignee names
+  assignees: text("assignees").array().notNull().default([]), // Array of assignee names
   dueDate: date("due_date"),
   startDate: date("start_date"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),

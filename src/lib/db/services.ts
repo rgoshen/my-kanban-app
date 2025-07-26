@@ -25,7 +25,7 @@ export const columnService = {
   async update(id: string, data: Partial<NewColumn>): Promise<Column | null> {
     const result = await db
       .update(columns)
-      .set({ ...data, updatedAt: new Date() })
+      .set({ updatedAt: new Date(), ...data })
       .where(eq(columns.id, id))
       .returning();
     return result[0] || null;
@@ -39,12 +39,20 @@ export const columnService = {
 
   // Reorder columns
   async reorder(columnIds: string[]): Promise<void> {
-    for (let i = 0; i < columnIds.length; i++) {
-      await db
-        .update(columns)
-        .set({ orderIndex: i, updatedAt: new Date() })
-        .where(eq(columns.id, columnIds[i]));
-    }
+    if (columnIds.length === 0) return;
+
+    // Use a transaction for atomicity
+    await db.transaction(async (tx) => {
+      // Batch updates for better performance
+      const updates = columnIds.map((id, index) =>
+        tx
+          .update(columns)
+          .set({ orderIndex: index, updatedAt: new Date() })
+          .where(eq(columns.id, id)),
+      );
+
+      await Promise.all(updates);
+    });
   },
 };
 
@@ -80,7 +88,7 @@ export const taskService = {
   async update(id: string, data: Partial<NewTask>): Promise<Task | null> {
     const result = await db
       .update(tasks)
-      .set({ ...data, updatedAt: new Date() })
+      .set({ updatedAt: new Date(), ...data })
       .where(eq(tasks.id, id))
       .returning();
     return result[0] || null;
@@ -108,12 +116,17 @@ export const taskService = {
 
   // Reorder tasks within a column
   async reorderTasks(columnId: string, taskIds: string[]): Promise<void> {
-    for (let i = 0; i < taskIds.length; i++) {
-      await db
-        .update(tasks)
-        .set({ orderIndex: i, updatedAt: new Date() })
-        .where(eq(tasks.id, taskIds[i]));
-    }
+    if (taskIds.length === 0) return;
+
+    // Use a transaction for atomicity
+    await db.transaction(async (tx) => {
+      // Batch updates for better performance
+      const updates = taskIds.map((id, index) =>
+        tx.update(tasks).set({ orderIndex: index, updatedAt: new Date() }).where(eq(tasks.id, id)),
+      );
+
+      await Promise.all(updates);
+    });
   },
 
   // Get tasks by status

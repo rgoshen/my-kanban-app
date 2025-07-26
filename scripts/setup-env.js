@@ -23,7 +23,23 @@ if (fs.existsSync(envLocalPath)) {
 
   // Create .env.local with development defaults
   const envLocalContent = exampleContent
-    .replace("NODE_ENV=development", "NODE_ENV=development")
+    .replace("NODE_ENV=production", "NODE_ENV=development")
+    .replace(
+      "DATABASE_URL=postgres://your_user:your_password@your_host:5432/your_database",
+      "DATABASE_URL=postgres://kanban_user:kanban_password@localhost:5432/kanban_db",
+    )
+    .replace("DB_HOST=your_host", "DB_HOST=localhost")
+    .replace("DB_USER=your_user", "DB_USER=kanban_user")
+    .replace("DB_PASSWORD=your_password", "DB_PASSWORD=kanban_password")
+    .replace("DB_NAME=your_database", "DB_NAME=kanban_db")
+    .replace(
+      "NEXT_PUBLIC_APP_URL=https://your-domain.com",
+      "NEXT_PUBLIC_APP_URL=http://localhost:3000",
+    )
+    .replace(
+      "AVATAR_SERVICE_URL=https://your-avatar-service.com",
+      "AVATAR_SERVICE_URL=https://api.example.com/avatars",
+    )
     .replace("DEBUG=false", "DEBUG=true")
     .replace("DB_LOGGING=false", "DB_LOGGING=true");
 
@@ -45,14 +61,25 @@ if (fs.existsSync(envTestPath)) {
 
   // Create .env.test with test-specific settings
   const envTestContent = exampleContent
-    .replace("NODE_ENV=development", "NODE_ENV=test")
-    .replace("DB_NAME=kanban_db", "DB_NAME=kanban_test_db")
+    .replace("NODE_ENV=production", "NODE_ENV=test")
     .replace(
-      "DATABASE_URL=postgres://kanban_user:kanban_password@localhost:5432/kanban_db",
+      "DATABASE_URL=postgres://your_user:your_password@your_host:5432/your_database",
       "DATABASE_URL=postgres://kanban_user:kanban_password@localhost:5432/kanban_test_db",
     )
-    .replace("DEBUG=true", "DEBUG=false")
-    .replace("DB_LOGGING=true", "DB_LOGGING=false");
+    .replace("DB_HOST=your_host", "DB_HOST=localhost")
+    .replace("DB_USER=your_user", "DB_USER=kanban_user")
+    .replace("DB_PASSWORD=your_password", "DB_PASSWORD=kanban_password")
+    .replace("DB_NAME=your_database", "DB_NAME=kanban_test_db")
+    .replace(
+      "NEXT_PUBLIC_APP_URL=https://your-domain.com",
+      "NEXT_PUBLIC_APP_URL=http://localhost:3000",
+    )
+    .replace(
+      "AVATAR_SERVICE_URL=https://your-avatar-service.com",
+      "AVATAR_SERVICE_URL=https://api.example.com/avatars",
+    )
+    .replace("DEBUG=false", "DEBUG=false")
+    .replace("DB_LOGGING=false", "DB_LOGGING=false");
 
   fs.writeFileSync(envTestPath, envTestContent);
 
