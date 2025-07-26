@@ -9,47 +9,96 @@ This project uses PostgreSQL with Drizzle ORM for data persistence.
 
 ## Quick Start
 
-1. **Start the database:**
+1. **Set up environment variables:**
+
+   ```bash
+   npm run setup:env
+   ```
+
+2. **Start the database:**
 
    ```bash
    npm run db:up
    ```
 
-2. **Generate and apply migrations:**
+3. **Generate and apply migrations:**
 
    ```bash
    npm run db:generate
    npm run db:push
    ```
 
-3. **Seed the database with sample data:**
+4. **Seed the database with sample data:**
 
    ```bash
    npm run db:seed
    ```
 
-4. **Start the development server:**
+5. **Start the development server:**
    ```bash
    npm run dev
    ```
 
 ## Environment Variables
 
-Create a `.env.local` file in the root directory with the following variables:
+### Quick Setup
+
+Run the environment setup script to create your environment files:
+
+```bash
+npm run setup:env
+```
+
+This will create:
+
+- `.env.local` - Development environment
+- `.env.test` - Test environment
+
+### Manual Setup
+
+If you prefer to create environment files manually, copy `config/env.example` to `.env.local` and customize as needed:
+
+```bash
+cp config/env.example .env.local
+```
+
+### Environment Variables
+
+The following variables are available:
+
+#### Database Configuration
 
 ```env
-# Database Configuration
+# Primary database connection string (takes precedence)
 DATABASE_URL=postgres://kanban_user:kanban_password@localhost:5432/kanban_db
 
-# Alternative individual database settings
+# Individual database settings (fallback)
 DB_HOST=localhost
 DB_PORT=5432
 DB_USER=kanban_user
 DB_PASSWORD=kanban_password
 DB_NAME=kanban_db
+```
 
-# Next.js Configuration
+#### Application Configuration
+
+```env
 NODE_ENV=development
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+#### Development & Debugging
+
+```env
+DEBUG=true
+DB_LOGGING=true
+```
+
+#### Security (for future use)
+
+```env
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+SESSION_SECRET=your-session-secret-change-this-in-production
 ```
 
 ## Database Schema
