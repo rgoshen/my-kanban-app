@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import KanbanBoard from "../kanban-board";
+import KanbanBoard from "../kanban/kanban-board";
 import { Task } from "@/types/task";
 import { sampleTasks } from "@/data/sample-tasks";
 
@@ -30,7 +30,7 @@ jest.mock("@dnd-kit/core", () => ({
 }));
 
 // Mock the TaskFormDialog component
-jest.mock("../task-form-dialog", () => ({
+jest.mock("../kanban/task-form-dialog", () => ({
   TaskFormDialog: ({ onSubmit }: { onSubmit: (data: any) => void }) => (
     <button
       data-testid="add-task-button"
@@ -50,7 +50,7 @@ jest.mock("../task-form-dialog", () => ({
 }));
 
 // Mock the KanbanColumns component
-jest.mock("../kanban-columns", () => ({
+jest.mock("../kanban/kanban-columns", () => ({
   KanbanColumns: ({ tasks, onUpdateTask }: { tasks: Task[]; onUpdateTask?: any }) => (
     <div data-testid="kanban-columns">
       {tasks.map((task) => (
@@ -69,14 +69,14 @@ jest.mock("../kanban-columns", () => ({
 }));
 
 // Mock the TaskCard component
-jest.mock("../task-card", () => ({
+jest.mock("../kanban/task-card", () => ({
   TaskCard: ({ task }: { task: Task }) => (
     <div data-testid={`task-card-${task.id}`}>{task.title}</div>
   ),
 }));
 
 // Mock the ThemeToggle component
-jest.mock("../theme-toggle", () => ({
+jest.mock("../layout/theme-toggle", () => ({
   ThemeToggle: () => <div data-testid="theme-toggle">Theme Toggle</div>,
 }));
 
