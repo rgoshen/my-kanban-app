@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import { DroppableColumn } from "../droppable-column";
+import { DroppableColumn } from "../kanban/droppable-column";
 import { Task } from "@/types/task";
 
 // Mock the useDroppable hook
@@ -18,7 +18,7 @@ jest.mock("@/hooks/use-is-client", () => ({
 }));
 
 // Mock the TaskCard component
-jest.mock("../task-card", () => ({
+jest.mock("../kanban/task-card", () => ({
   TaskCard: ({ task }: { task: Task }) => (
     <div data-testid={`task-card-${task.id}`}>
       <h3>{task.title}</h3>

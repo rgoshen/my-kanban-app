@@ -1,0 +1,37 @@
+# Codecov configuration
+# https://docs.codecov.io/docs/codecov-yaml
+
+coverage:
+  precision: 2
+  round: down
+  range: "80...100"
+  status:
+    project:
+      default:
+        target: 80%
+        threshold: 5%
+    patch:
+      default:
+        target: 80%
+        threshold: 5%
+
+# Ignore files from coverage reporting
+ignore:
+  - "src/lib/db/seed.ts" # Database seeding utility
+  - "src/lib/db/test-connection.ts" # Database connection test utility
+  - "src/lib/db/services.ts" # Will be tested with API routes
+  - "src/data/**/*" # Test data files
+  - "src/components/ui/**/*" # UI component library
+  - "src/app/layout.tsx" # App layout
+  - "src/app/page.tsx" # App page
+  - "src/app/globals.css" # Global styles
+  - "**/*.test.{js,jsx,ts,tsx}" # Test files
+  - "**/*.spec.{js,jsx,ts,tsx}" # Spec files
+  - "**/*.d.ts" # TypeScript declaration files
+  - "**/*.stories.{js,jsx,ts,tsx}" # Storybook files
+
+# Comment settings
+comment:
+  layout: "reach, diff, flags, files"
+  behavior: default
+  require_changes: false

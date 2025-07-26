@@ -1,6 +1,6 @@
 import React from "react";
 import { render } from "@testing-library/react";
-import { ThemeProvider } from "../theme-provider";
+import { ThemeProvider } from "../layout/theme-provider";
 
 // Mock next-themes
 jest.mock("next-themes", () => ({

@@ -190,3 +190,13 @@ The project uses Husky for pre-commit and pre-push hooks:
 
 - **Pre-commit**: Runs linting and formatting
 - **Pre-push**: Runs full code quality checks and tests
+
+## 📚 Documentation
+
+For detailed documentation, see the [docs/](docs/) folder:
+
+- **[Database Setup](docs/DATABASE_SETUP.md)** - PostgreSQL and Drizzle ORM setup
+- **[Contributing Guidelines](docs/CONTRIBUTING.md)** - How to contribute to the project
+- **[Git Hooks](docs/GIT_HOOKS.md)** - Pre-commit hooks and automation
+- **[Avatar Service](docs/AVATAR_SERVICE.md)** - Avatar generation service
+- **[Documentation Index](docs/README.md)** - Complete documentation overview

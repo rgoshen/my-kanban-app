@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { TaskCard } from "../task-card";
+import { TaskCard } from "../kanban/task-card";
 import { Task } from "@/types/task";
 
 // Mock the useDraggable hook

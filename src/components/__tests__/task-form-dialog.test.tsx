@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { TaskFormDialog } from "../task-form-dialog";
+import { TaskFormDialog } from "../kanban/task-form-dialog";
 
 // Mock the Select component to avoid pointer event issues
 jest.mock("@/components/ui/select", () => ({

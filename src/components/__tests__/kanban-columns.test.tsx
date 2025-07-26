@@ -1,10 +1,10 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import { KanbanColumns } from "../kanban-columns";
+import { KanbanColumns } from "../kanban/kanban-columns";
 import { Task } from "@/types/task";
 
 // Mock the DroppableColumn component
-jest.mock("../droppable-column", () => ({
+jest.mock("../kanban/droppable-column", () => ({
   DroppableColumn: ({ id, title, tasks, onUpdateTask }: any) => (
     <div data-testid={`column-${id}`}>
       <h3>{title}</h3>

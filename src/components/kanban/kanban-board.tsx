@@ -20,7 +20,7 @@ import { Task } from "@/types/task";
 import { sampleTasks } from "@/data/sample-tasks";
 import { useState } from "react";
 import { useIsClient } from "@/hooks/use-is-client";
-import { ThemeToggle } from "./theme-toggle";
+import { ThemeToggle } from "../layout/theme-toggle";
 import { parseAssignees } from "@/lib/utils";
 
 interface TaskFormSubmitData extends Omit<TaskFormData, "assignees"> {
