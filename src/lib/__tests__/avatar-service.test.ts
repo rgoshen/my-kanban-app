@@ -131,4 +131,37 @@ describe("AvatarService", () => {
       AvatarService.getAvatarData = originalGetAvatarData;
     });
   });
+
+  describe("rate limiting", () => {
+    it("should handle concurrent requests with rate limiting", async () => {
+      const startTime = Date.now();
+
+      // Make multiple concurrent requests
+      const promises = Array.from({ length: 5 }, () => AvatarService.getAvatarData("Test User"));
+
+      await Promise.all(promises);
+
+      const endTime = Date.now();
+      const duration = endTime - startTime;
+
+      // Should take at least 400ms (4 * 100ms delays) due to rate limiting
+      expect(duration).toBeGreaterThanOrEqual(400);
+    });
+
+    it("should maintain rate limiting across multiple calls", async () => {
+      const startTime = Date.now();
+
+      // First call
+      await AvatarService.getAvatarData("User 1");
+
+      // Second call should be rate limited
+      await AvatarService.getAvatarData("User 2");
+
+      const endTime = Date.now();
+      const duration = endTime - startTime;
+
+      // Should take at least 100ms due to rate limiting
+      expect(duration).toBeGreaterThanOrEqual(100);
+    });
+  });
 });

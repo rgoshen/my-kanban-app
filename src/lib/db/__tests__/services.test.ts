@@ -2,6 +2,13 @@ import { describe, it, expect, jest, beforeEach } from "@jest/globals";
 import { columnService, taskService } from "../services";
 import { columns, tasks } from "../schema";
 
+// Mock the validation module
+jest.mock("../../validation", () => ({
+  validateUUID: jest.fn(),
+  validateRequiredString: jest.fn(),
+  validateOptionalString: jest.fn(),
+}));
+
 // Mock the database
 jest.mock("../index", () => ({
   db: {
@@ -51,8 +58,18 @@ jest.mock("../index", () => ({
 }));
 
 describe("Database Services", () => {
+  const {
+    validateUUID,
+    validateRequiredString,
+    validateOptionalString,
+  } = require("../../validation");
+
   beforeEach(() => {
     jest.clearAllMocks();
+    // Reset validation mocks
+    (validateUUID as jest.Mock).mockReturnValue(true);
+    (validateRequiredString as jest.Mock).mockImplementation((input) => input);
+    (validateOptionalString as jest.Mock).mockImplementation((input) => input);
   });
 
   describe("Column Service", () => {
@@ -61,9 +78,41 @@ describe("Database Services", () => {
       expect(typeof columnService.getAll).toBe("function");
     });
 
-    it("should have getById method", () => {
-      expect(columnService.getById).toBeDefined();
-      expect(typeof columnService.getById).toBe("function");
+    it("should validate UUID in getById", async () => {
+      (validateUUID as jest.Mock).mockReturnValue(false);
+
+      await expect(columnService.getById("invalid-uuid")).rejects.toThrow(
+        "Invalid column ID format",
+      );
+      expect(validateUUID).toHaveBeenCalledWith("invalid-uuid");
+    });
+
+    it("should validate UUID in update", async () => {
+      (validateUUID as jest.Mock).mockReturnValue(false);
+
+      await expect(columnService.update("invalid-uuid", { name: "test" })).rejects.toThrow(
+        "Invalid column ID format",
+      );
+      expect(validateUUID).toHaveBeenCalledWith("invalid-uuid");
+    });
+
+    it("should validate UUID in delete", async () => {
+      (validateUUID as jest.Mock).mockReturnValue(false);
+
+      await expect(columnService.delete("invalid-uuid")).rejects.toThrow(
+        "Invalid column ID format",
+      );
+      expect(validateUUID).toHaveBeenCalledWith("invalid-uuid");
+    });
+
+    it("should validate required string in create", async () => {
+      await columnService.create({ name: "test column" });
+      expect(validateRequiredString).toHaveBeenCalledWith("test column", "Column name");
+    });
+
+    it("should validate required string in update", async () => {
+      await columnService.update("valid-uuid", { name: "updated column" });
+      expect(validateRequiredString).toHaveBeenCalledWith("updated column", "Column name");
     });
 
     it("should have create method", () => {
@@ -91,6 +140,33 @@ describe("Database Services", () => {
     it("should have getAll method", () => {
       expect(taskService.getAll).toBeDefined();
       expect(typeof taskService.getAll).toBe("function");
+    });
+
+    it("should validate UUID in getById", async () => {
+      (validateUUID as jest.Mock).mockReturnValue(false);
+
+      await expect(taskService.getById("invalid-uuid")).rejects.toThrow("Invalid task ID format");
+      expect(validateUUID).toHaveBeenCalledWith("invalid-uuid");
+    });
+
+    it("should validate UUID in getByColumnId", async () => {
+      (validateUUID as jest.Mock).mockReturnValue(false);
+
+      await expect(taskService.getByColumnId("invalid-uuid")).rejects.toThrow(
+        "Invalid column ID format",
+      );
+      expect(validateUUID).toHaveBeenCalledWith("invalid-uuid");
+    });
+
+    it("should validate required string in create", async () => {
+      await taskService.create({
+        title: "test task",
+        description: "test description",
+        priority: "medium",
+        status: "todo",
+      });
+      expect(validateRequiredString).toHaveBeenCalledWith("test task", "Task title");
+      expect(validateOptionalString).toHaveBeenCalledWith("test description");
     });
 
     it("should have getById method", () => {

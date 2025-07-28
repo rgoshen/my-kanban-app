@@ -19,10 +19,12 @@ export function sanitizeString(input: string): string {
   if (!input) return "";
 
   // Use DOMPurify to remove any HTML/script tags and dangerous content
+  // KEEP_CONTENT ensures text content is preserved while removing tags
   return DOMPurify.sanitize(input.trim(), {
     ALLOWED_TAGS: [],
     ALLOWED_ATTR: [],
     KEEP_CONTENT: true,
+    ALLOW_DATA_ATTR: false,
   });
 }
 
