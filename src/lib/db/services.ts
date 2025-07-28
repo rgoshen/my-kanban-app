@@ -1,16 +1,7 @@
 import { eq, asc, desc } from "drizzle-orm";
 import { db } from "./index";
 import { columns, tasks, type Column, type NewColumn, type Task, type NewTask } from "./schema";
-
-// Input validation utilities
-function validateUUID(id: string): boolean {
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-  return uuidRegex.test(id);
-}
-
-function sanitizeString(input: string): string {
-  return input.trim().replace(/[<>]/g, "");
-}
+import { validateUUID, validateRequiredString, validateOptionalString } from "../validation";
 
 // Column services
 export const columnService = {
@@ -32,7 +23,7 @@ export const columnService = {
   async create(data: NewColumn): Promise<Column> {
     const sanitizedData = {
       ...data,
-      name: sanitizeString(data.name || ""),
+      name: validateRequiredString(data.name, "Column name"),
     };
     const result = await db.insert(columns).values(sanitizedData).returning();
     return result[0];
@@ -45,7 +36,7 @@ export const columnService = {
     }
     const sanitizedData = {
       ...data,
-      name: data.name ? sanitizeString(data.name) : undefined,
+      name: data.name ? validateRequiredString(data.name, "Column name") : undefined,
     };
     const result = await db
       .update(columns)
@@ -115,8 +106,8 @@ export const taskService = {
   async create(data: NewTask): Promise<Task> {
     const sanitizedData = {
       ...data,
-      title: sanitizeString(data.title || ""),
-      description: data.description ? sanitizeString(data.description) : undefined,
+      title: validateRequiredString(data.title, "Task title"),
+      description: validateOptionalString(data.description),
     };
     const result = await db.insert(tasks).values(sanitizedData).returning();
     return result[0];

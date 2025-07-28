@@ -8,6 +8,8 @@ export class AvatarService {
   private static readonly AVATAR_API_BASE = "https://api.dicebear.com/7.x/personas/png";
   private static readonly RATE_LIMIT_DELAY = 100; // 100ms between requests
   private static lastRequestTime = 0;
+  // Mutex for rate limiting to ensure atomic updates in concurrent scenarios
+  private static rateLimitMutex: Promise<void> = Promise.resolve();
   private static readonly FALLBACK_COLORS = [
     "!bg-blue-100 !text-blue-800 dark:!bg-blue-900/20 dark:!text-blue-400",
     "!bg-green-100 !text-green-800 dark:!bg-green-900/20 dark:!text-green-400",
@@ -89,15 +91,17 @@ export class AvatarService {
    * @returns Promise<string> - The avatar image URL
    */
   private static async generateAvatarUrl(name: string, initials: string): Promise<string> {
-    // Rate limiting
-    const now = Date.now();
-    const timeSinceLastRequest = now - this.lastRequestTime;
-    if (timeSinceLastRequest < this.RATE_LIMIT_DELAY) {
-      await new Promise((resolve) =>
-        setTimeout(resolve, this.RATE_LIMIT_DELAY - timeSinceLastRequest),
-      );
-    }
-    this.lastRequestTime = Date.now();
+    // Rate limiting with mutex to ensure atomic updates in concurrent scenarios
+    await (this.rateLimitMutex = this.rateLimitMutex.then(async () => {
+      const now = Date.now();
+      const timeSinceLastRequest = now - this.lastRequestTime;
+      if (timeSinceLastRequest < this.RATE_LIMIT_DELAY) {
+        await new Promise((resolve) =>
+          setTimeout(resolve, this.RATE_LIMIT_DELAY - timeSinceLastRequest),
+        );
+      }
+      this.lastRequestTime = Date.now();
+    }));
 
     const params = new URLSearchParams({
       seed: name.toLowerCase().replace(/\s+/g, "-"),
