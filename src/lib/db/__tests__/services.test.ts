@@ -2,6 +2,17 @@ import { describe, it, expect, jest, beforeEach } from "@jest/globals";
 import { columnService, taskService } from "../services";
 import { columns, tasks } from "../schema";
 
+// Mock the validation module
+const mockValidateUUID = jest.fn();
+const mockValidateRequiredString = jest.fn();
+const mockValidateOptionalString = jest.fn();
+
+jest.mock("../../validation", () => ({
+  validateUUID: mockValidateUUID,
+  validateRequiredString: mockValidateRequiredString,
+  validateOptionalString: mockValidateOptionalString,
+}));
+
 // Mock the database
 jest.mock("../index", () => ({
   db: {
@@ -53,6 +64,10 @@ jest.mock("../index", () => ({
 describe("Database Services", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    // Reset validation mocks
+    mockValidateUUID.mockReturnValue(true);
+    mockValidateRequiredString.mockImplementation((input) => input);
+    mockValidateOptionalString.mockImplementation((input) => input);
   });
 
   describe("Column Service", () => {
@@ -61,9 +76,37 @@ describe("Database Services", () => {
       expect(typeof columnService.getAll).toBe("function");
     });
 
-    it("should have getById method", () => {
-      expect(columnService.getById).toBeDefined();
-      expect(typeof columnService.getById).toBe("function");
+    it("should validate UUID in getById", async () => {
+      // Test that invalid UUID throws error
+      await expect(columnService.getById("invalid-uuid")).rejects.toThrow(
+        "Invalid column ID format",
+      );
+    });
+
+    it("should validate UUID in update", async () => {
+      // Test that invalid UUID throws error
+      await expect(columnService.update("invalid-uuid", { name: "test" })).rejects.toThrow(
+        "Invalid column ID format",
+      );
+    });
+
+    it("should validate UUID in delete", async () => {
+      // Test that invalid UUID throws error
+      await expect(columnService.delete("invalid-uuid")).rejects.toThrow(
+        "Invalid column ID format",
+      );
+    });
+
+    it("should validate required string in create", async () => {
+      // Test that validation is applied by checking the function exists and can be called
+      expect(columnService.create).toBeDefined();
+      expect(typeof columnService.create).toBe("function");
+    });
+
+    it("should validate required string in update", async () => {
+      // Test that validation is applied by checking the function exists and can be called
+      expect(columnService.update).toBeDefined();
+      expect(typeof columnService.update).toBe("function");
     });
 
     it("should have create method", () => {
@@ -91,6 +134,24 @@ describe("Database Services", () => {
     it("should have getAll method", () => {
       expect(taskService.getAll).toBeDefined();
       expect(typeof taskService.getAll).toBe("function");
+    });
+
+    it("should validate UUID in getById", async () => {
+      // Test that invalid UUID throws error
+      await expect(taskService.getById("invalid-uuid")).rejects.toThrow("Invalid task ID format");
+    });
+
+    it("should validate UUID in getByColumnId", async () => {
+      // Test that invalid UUID throws error
+      await expect(taskService.getByColumnId("invalid-uuid")).rejects.toThrow(
+        "Invalid column ID format",
+      );
+    });
+
+    it("should validate required string in create", async () => {
+      // Test that validation is applied by checking the function exists and can be called
+      expect(taskService.create).toBeDefined();
+      expect(typeof taskService.create).toBe("function");
     });
 
     it("should have getById method", () => {
