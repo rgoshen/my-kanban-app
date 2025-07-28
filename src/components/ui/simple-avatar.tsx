@@ -47,7 +47,7 @@ export function SimpleAvatar({ assigneeName, size = "md", className }: SimpleAva
         const data = await AvatarService.getAvatarData(assigneeName);
         setAvatarData(data);
       } catch (error) {
-        console.error("Failed to load avatar:", error);
+        console.error("Failed to load avatar");
         // Fallback to basic initials
         const initials = assigneeName
           .split(" ")
@@ -92,10 +92,10 @@ export function SimpleAvatar({ assigneeName, size = "md", className }: SimpleAva
           height={size === "sm" ? 20 : size === "md" ? 32 : 40}
           className="w-full h-full rounded-full object-cover"
           onLoad={() => {
-            console.log(`✅ Avatar image loaded successfully for ${assigneeName}`);
+            // Avatar loaded successfully
           }}
           onError={(e) => {
-            console.warn(`❌ Failed to load avatar image for ${assigneeName}:`, e);
+            console.warn(`Failed to load avatar image for ${assigneeName}`);
           }}
         />
       ) : (

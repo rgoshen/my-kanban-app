@@ -2,6 +2,16 @@ import { eq, asc, desc } from "drizzle-orm";
 import { db } from "./index";
 import { columns, tasks, type Column, type NewColumn, type Task, type NewTask } from "./schema";
 
+// Input validation utilities
+function validateUUID(id: string): boolean {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(id);
+}
+
+function sanitizeString(input: string): string {
+  return input.trim().replace(/[<>]/g, "");
+}
+
 // Column services
 export const columnService = {
   // Get all columns ordered by orderIndex
@@ -11,21 +21,35 @@ export const columnService = {
 
   // Get a single column by ID
   async getById(id: string): Promise<Column | null> {
+    if (!validateUUID(id)) {
+      throw new Error("Invalid column ID format");
+    }
     const result = await db.select().from(columns).where(eq(columns.id, id));
     return result[0] || null;
   },
 
   // Create a new column
   async create(data: NewColumn): Promise<Column> {
-    const result = await db.insert(columns).values(data).returning();
+    const sanitizedData = {
+      ...data,
+      name: sanitizeString(data.name || ""),
+    };
+    const result = await db.insert(columns).values(sanitizedData).returning();
     return result[0];
   },
 
   // Update a column
   async update(id: string, data: Partial<NewColumn>): Promise<Column | null> {
+    if (!validateUUID(id)) {
+      throw new Error("Invalid column ID format");
+    }
+    const sanitizedData = {
+      ...data,
+      name: data.name ? sanitizeString(data.name) : undefined,
+    };
     const result = await db
       .update(columns)
-      .set({ updatedAt: new Date(), ...data })
+      .set({ updatedAt: new Date(), ...sanitizedData })
       .where(eq(columns.id, id))
       .returning();
     return result[0] || null;
@@ -33,6 +57,9 @@ export const columnService = {
 
   // Delete a column (will cascade delete associated tasks)
   async delete(id: string): Promise<boolean> {
+    if (!validateUUID(id)) {
+      throw new Error("Invalid column ID format");
+    }
     const result = await db.delete(columns).where(eq(columns.id, id)).returning();
     return result.length > 0;
   },
@@ -65,6 +92,9 @@ export const taskService = {
 
   // Get tasks by column ID
   async getByColumnId(columnId: string): Promise<Task[]> {
+    if (!validateUUID(columnId)) {
+      throw new Error("Invalid column ID format");
+    }
     return await db
       .select()
       .from(tasks)
@@ -74,13 +104,21 @@ export const taskService = {
 
   // Get a single task by ID
   async getById(id: string): Promise<Task | null> {
+    if (!validateUUID(id)) {
+      throw new Error("Invalid task ID format");
+    }
     const result = await db.select().from(tasks).where(eq(tasks.id, id));
     return result[0] || null;
   },
 
   // Create a new task
   async create(data: NewTask): Promise<Task> {
-    const result = await db.insert(tasks).values(data).returning();
+    const sanitizedData = {
+      ...data,
+      title: sanitizeString(data.title || ""),
+      description: data.description ? sanitizeString(data.description) : undefined,
+    };
+    const result = await db.insert(tasks).values(sanitizedData).returning();
     return result[0];
   },
 
