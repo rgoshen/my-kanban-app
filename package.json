@@ -89,7 +89,7 @@
     "@typescript-eslint/parser": "^8.37.0",
     "drizzle-kit": "^0.31.4",
     "eslint": "^9",
-    "eslint-config-next": "15.4.4",
+    "eslint-config-next": "16.0.0",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-prettier": "^5.5.3",
